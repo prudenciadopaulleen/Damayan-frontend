@@ -1,14 +1,16 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { SectionCard, Screen } from "../components/UI";
-import { roleColors, theme, fonts } from "../theme";
+import { Pressable, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Screen } from "../components/UI";
+import { roleColors, theme } from "../theme";
 import { AppRoute, PortalRole } from "../types";
+import { styles } from "./RoleSelectorScreen.styles";
 
-const roles: { id: PortalRole; label: string; desc: string }[] = [
-  { id: "admin", label: "Admin", desc: "System monitoring, approvals, and reports" },
-  { id: "dispatcher", label: "Dispatcher", desc: "Incident assignment and field coordination" },
-  { id: "site_manager", label: "Site Manager", desc: "Shelter readiness and intake operations" },
-  { id: "citizen", label: "Affected Citizen", desc: "Registration, alerts, and relief tracking" },
+const roles: { id: PortalRole; label: string; desc: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+  { id: "admin", label: "Admin", desc: "System monitoring & approvals", icon: "shield-checkmark" },
+  { id: "dispatcher", label: "Dispatcher", desc: "Field & resource coordination", icon: "airplane" },
+  { id: "site_manager", label: "Site Manager", desc: "Intake & logistics operations", icon: "home" },
+  { id: "citizen", label: "Affected Citizen", desc: "Registration & relief access", icon: "people" },
 ];
 
 const routeMap: Record<PortalRole, AppRoute> = {
@@ -20,100 +22,45 @@ const routeMap: Record<PortalRole, AppRoute> = {
 
 export function RoleSelectorScreen({ onNavigate }: { onNavigate: (route: AppRoute) => void }) {
   return (
-    <Screen>
-      <SectionCard style={styles.hero}>
-        <View style={styles.mark}>
-          <Text style={styles.markText}>D</Text>
-        </View>
-        <Text style={styles.brand}>DAMAYAN</Text>
-        <Text style={styles.headline}>Choose Your Portal</Text>
-        <Text style={styles.copy}>
-          Open the right operational view for your role. This mobile app mirrors the
-          main desktop flows in a phone-friendly format.
-        </Text>
-      </SectionCard>
-
-      {roles.map((role) => (
-        <Pressable
-          key={role.id}
-          onPress={() => onNavigate(routeMap[role.id])}
-          style={styles.roleCard}
-        >
-          <View style={[styles.roleDot, { backgroundColor: roleColors[role.id] }]} />
-          <View style={styles.roleCopy}>
-            <Text style={styles.roleLabel}>{role.label}</Text>
-            <Text style={styles.roleDesc}>{role.desc}</Text>
+    <Screen style={{ backgroundColor: theme.bg }}>
+      <View style={styles.hero}>
+        <View style={styles.heroGradient} />
+        <View style={{ paddingHorizontal: 24 }}>
+          <View style={styles.mark}>
+            <Text style={styles.markText}>D</Text>
           </View>
-          <Text style={[styles.openText, { color: roleColors[role.id] }]}>Open</Text>
-        </Pressable>
-      ))}
+          <Text style={styles.brand}>DAMAYAN</Text>
+          <Text style={styles.headline}>Choose Your{"\n"}Portal</Text>
+          <Text style={styles.copy}>
+            Open the operational view for your role. This app mirrors the main
+            desktop flows in a mobile-safe format.
+          </Text>
+        </View>
+      </View>
+
+      <View style={{ paddingBottom: 40 }}>
+        {roles.map((role) => (
+          <Pressable
+            key={role.id}
+            onPress={() => onNavigate(routeMap[role.id])}
+            style={({ pressed }) => [
+              styles.roleCard,
+              pressed && { transform: [{ scale: 0.98 }], opacity: 0.9 }
+            ]}
+          >
+            <View style={[styles.iconContainer, { backgroundColor: roleColors[role.id] + "10" }]}>
+              <Ionicons name={role.icon} size={28} color={roleColors[role.id]} />
+            </View>
+            <View style={styles.roleCopy}>
+              <Text style={styles.roleLabel}>{role.label}</Text>
+              <Text style={styles.roleDesc}>{role.desc}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={theme.textLight} style={styles.chevron} />
+          </Pressable>
+        ))}
+      </View>
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
-  hero: {
-    backgroundColor: theme.primary,
-  },
-  mark: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.16)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
-  },
-  markText: {
-    color: "#fff",
-    ...fonts.black,
-  },
-  brand: {
-    color: "#fff",
-    fontSize: 20,
-    ...fonts.extrabold,
-    marginBottom: 16,
-  },
-  headline: {
-    color: "#fff",
-    fontSize: 34,
-    lineHeight: 36,
-    ...fonts.black,
-    marginBottom: 12,
-  },
-  copy: {
-    color: "rgba(255,255,255,0.84)",
-    lineHeight: 22,
-  },
-  roleCard: {
-    backgroundColor: theme.surface,
-    borderRadius: 22,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: theme.line,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-  },
-  roleDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 999,
-  },
-  roleCopy: {
-    flex: 1,
-    gap: 4,
-  },
-  roleLabel: {
-    color: theme.text,
-    fontSize: 16,
-    ...fonts.extrabold,
-  },
-  roleDesc: {
-    color: theme.textMuted,
-    lineHeight: 20,
-  },
-  openText: {
-    ...fonts.extrabold,
-  },
-});
+

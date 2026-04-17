@@ -12,7 +12,7 @@ import {
 } from "./src/citizen";
 import { DispatcherBeforeScreen, DispatcherDuringScreen } from "./src/dispatcher";
 import { PortalLoginScreen, RoleSelectorScreen } from "./src/loginportal";
-import { SiteManagerBeforeScreen, SiteManagerDuringScreen } from "./src/site-manager";
+import { SiteManagerBeforeScreen, SiteManagerDuringScreen, SiteManagerSignupScreen } from "./src/site-manager";
 import { AppRoute } from "./src/types";
 
 export default function App() {
@@ -88,6 +88,18 @@ export default function App() {
             role="site_manager"
             onBack={() => setRoute("role-selector")}
             onSubmit={() => setRoute("site-manager-before")}
+            onSecondary={() => setRoute("site-manager-signup")}
+            secondaryLabel="Create An Account"
+          />
+        </>
+      );
+    case "site-manager-signup":
+      return (
+        <>
+          <StatusBar style="dark" />
+          <SiteManagerSignupScreen
+            onBack={() => setRoute("site-manager-login")}
+            onSubmit={() => setRoute("site-manager-login")}
           />
         </>
       );
@@ -127,7 +139,7 @@ export default function App() {
           <StatusBar style="dark" />
           <CitizenSignupScreen
             onBack={() => setRoute("citizen-login")}
-            onSubmit={() => setRoute("citizen-login")}
+            onSubmit={() => setRoute("citizen-before")}
           />
         </>
       );
@@ -137,38 +149,7 @@ export default function App() {
           <StatusBar style="dark" />
           <CitizenBeforeScreen
             onBack={() => setRoute("role-selector")}
-            onRegisterSelf={() => setRoute("citizen-before-self")}
-            onRegisterHousehold={() => setRoute("citizen-before-household")}
-          />
-        </>
-      );
-    case "citizen-before-self":
-      return (
-        <>
-          <StatusBar style="dark" />
-          <CitizenIndividualRegistrationScreen
-            onBack={() => setRoute("citizen-before")}
-            onContinue={() => setRoute("citizen-before")}
-          />
-        </>
-      );
-    case "citizen-before-household":
-      return (
-        <>
-          <StatusBar style="dark" />
-          <CitizenHouseholdRegistrationScreen
-            onBack={() => setRoute("citizen-before")}
-            onContinue={() => setRoute("citizen-before-household-members")}
-          />
-        </>
-      );
-    case "citizen-before-household-members":
-      return (
-        <>
-          <StatusBar style="dark" />
-          <CitizenHouseholdMembersScreen
-            onBack={() => setRoute("citizen-before-household")}
-            onContinue={() => setRoute("citizen-during")}
+            onOpenResponse={() => setRoute("citizen-during")}
           />
         </>
       );

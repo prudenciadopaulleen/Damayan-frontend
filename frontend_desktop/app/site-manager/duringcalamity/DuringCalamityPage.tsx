@@ -299,6 +299,44 @@ export default function DuringCalamityPage() {
             </div>
           </section>
 
+          <section className="incident-report-card">
+            <div className="incident-report-header">
+              <div>
+                <h2>Report Site Incident</h2>
+                <p>Log critical events, supply shortages, or medical emergencies immediately.</p>
+              </div>
+              <div className="incident-count-badge">3 active alerts</div>
+            </div>
+
+            <form className="incident-report-form">
+              <div className="incident-form-grid">
+                <div className="manual-field">
+                  <label>Incident Type</label>
+                  <select className="incident-select">
+                    <option>Medical Emergency</option>
+                    <option>Supply Shortage</option>
+                    <option>Infrastructure Damage</option>
+                    <option>Security/Conflict</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div className="manual-field">
+                  <label>Severity Level</label>
+                  <div className="severity-toggle">
+                    <button type="button" className="severity-btn critical">Critical</button>
+                    <button type="button" className="severity-btn high active">High</button>
+                    <button type="button" className="severity-btn moderate">Moderate</button>
+                  </div>
+                </div>
+              </div>
+              <div className="manual-field">
+                <label>Incident Description</label>
+                <textarea className="incident-textarea" placeholder="Describe the situation in detail..."></textarea>
+              </div>
+              <button type="submit" className="incident-submit-btn">Submit Incident Report</button>
+            </form>
+          </section>
+
           <section className="response-grid">
             <div className="response-left-column">
               <div className="response-map-card">

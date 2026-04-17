@@ -71,6 +71,10 @@ export default function SiteManagerLogInPage() {
                 Log In To Site Manager Dashboard
               </button>
             </form>
+
+            <p style={{ margin: "24px 0 0", color: "#5f6b66", fontSize: 16 }}>
+              Don't have an account? <Link href="/site-manager/signup" style={{ color: "#2e7d32", textDecoration: "none", fontWeight: 800 }}>Sign up here</Link>.
+            </p>
           </article>
         </section>
       </section>
