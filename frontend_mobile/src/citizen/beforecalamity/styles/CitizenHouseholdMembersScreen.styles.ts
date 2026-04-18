@@ -3,12 +3,12 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#fafaf5",
+    backgroundColor: "#f5f7f5",
   },
   content: {
     padding: 24,
-    paddingBottom: 32,
-    gap: 24,
+    paddingBottom: 48,
+    gap: 28,
   },
   topBar: {
     flexDirection: "row",
@@ -105,8 +105,17 @@ export const styles = StyleSheet.create({
   },
   memberStatus: {
     color: "#2e7d32",
-    fontSize: 16,
-    fontWeight: "900",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  memberStatusBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(46, 125, 50, 0.1)",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
   },
   memberGrid: {
     gap: 16,
@@ -163,9 +172,18 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "900",
   },
+  newMemberLabel: {
+    color: "#40493d",
+    fontSize: 10,
+    fontWeight: "800",
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+    opacity: 0.6,
+    marginBottom: 2,
+  },
   newMemberTitle: {
     color: "#1a1c19",
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "800",
   },
   formGrid: {
@@ -206,16 +224,24 @@ export const styles = StyleSheet.create({
   },
   relationshipChip: {
     backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "rgba(191,202,186,0.35)",
+    borderWidth: 1.5,
+    borderColor: "rgba(191,202,186,0.4)",
     borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  relationshipChipActive: {
+    backgroundColor: "#0d631b",
+    borderColor: "#0d631b",
   },
   relationshipChipText: {
     color: "#40493d",
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "600",
+  },
+  relationshipChipTextActive: {
+    color: "#ffffff",
+    fontWeight: "700",
   },
   inputWithIcon: {
     minHeight: 56,
@@ -304,19 +330,19 @@ export const styles = StyleSheet.create({
     fontWeight: "800",
   },
   primaryButton: {
-    minHeight: 56,
-    borderRadius: 16,
+    minHeight: 60,
+    borderRadius: 20,
     backgroundColor: "#0d631b",
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-    gap: 8,
-    paddingHorizontal: 16,
+    gap: 10,
+    paddingHorizontal: 20,
     shadowColor: "#0d631b",
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.22,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 8 },
-    elevation: 3,
+    elevation: 4,
   },
   primaryButtonText: {
     color: "#ffffff",

@@ -16,7 +16,18 @@ import { styles } from "./PortalLoginScreen.styles";
 
 const roleContent: Record<
   PortalRole,
-  { title: string; subtitle: string; loginLabel: string; accent: string; action: string }
+  { 
+    title: string; 
+    subtitle: string; 
+    loginLabel: string; 
+    accent: string; 
+    action: string;
+    editorialTitle?: string;
+    editorialAccent?: string;
+    editorialText?: string;
+    editorialImage?: string;
+    gatewayLabel?: string;
+  }
 > = {
   admin: {
     title: "Admin Access",
@@ -38,6 +49,11 @@ const roleContent: Record<
     loginLabel: "Site Manager",
     accent: roleColors.site_manager,
     action: "Log In To Site Manager Dashboard",
+    gatewayLabel: "Operational Authority",
+    editorialTitle: "Global Operational",
+    editorialAccent: "Control",
+    editorialText: "Access real-time intake tracking, local distribution logs, and shelter capacity monitoring in our optimized mobile workflow.",
+    editorialImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuB7mK6Wlk5tpcz_jg-y_FNS8PaNwyml1WkYUcFxvzRckiijTcFHZ86PvgEvRj5z91SeFpO35w95Xf15h9Te72zdNO_c_pH-SUPMX4S6vwvPbl8QmMKDbrRL0QEyIjDbUkei6wxoM5mR4tV1mIUpd3l_eiEyNBIID90mRxapOumpUbprXPaH5UFcCDYK9tjGxos2cuTC8Enx25m3LklOoLtJ3_jBY0PMnIW53zyJbubc1XMeyAhFTjngNmNce8IUw9kWG3_Iw1rge8vN",
   },
   citizen: {
     title: "Citizen Access",
@@ -45,6 +61,11 @@ const roleContent: Record<
     loginLabel: "Citizen",
     accent: roleColors.citizen,
     action: "Continue To Citizen Dashboard",
+    gatewayLabel: "Secure Access Gateway",
+    editorialTitle: "The Resilient",
+    editorialAccent: "Sanctuary",
+    editorialText: "Access humanitarian relief protocols, emergency status updates, and personal identification records within our secure environment.",
+    editorialImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDUeDgaq6XCJNBqX0uYoHRejovD-YsgRj9XE5F62qvcrVmANmWRhPjGJdgTgag5gYg96TXaegniq89lq04L0wXvg92nzJmruiEnOyI5oGwyTJzc1503PTnFrS3awvyIO9d95iNTsSSrhrgEqGFrBrR-FuVdXiiqR3Nam6VzDypJIhvd4WOqXhGk_AJtsZpPol5lAkW0P5xFhTUrrykrvIrbQq5cSzalGjM0TO7Y_or_zzhXBQ-9zEQWV2QatioCFDhS4cotqpRETjxM",
   },
 };
 
@@ -66,7 +87,7 @@ export function PortalLoginScreen({
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  if (role === "citizen") {
+  if (role === "citizen" || role === "site_manager") {
     return (
       <Screen>
         <View style={styles.citizenShell}>
@@ -79,10 +100,12 @@ export function PortalLoginScreen({
             </View>
 
             <View style={styles.roleBadgeRow}>
-              <Text style={styles.roleTag}>Affected Citizen</Text>
+              <Text style={styles.roleTag}>{role === "citizen" ? "Affected Citizen" : "Site Manager"}</Text>
               <Image
                 source={{
-                  uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuDsxxZ7tWtiorEdOPyE36FXiP8jypRF29-cQQeoNHjDFpKcSmU_HJU8kIr38p5OREBlTSX7Fjf8BBMNqbdr2qr6NRCyKVpJF26FEMhQdT1HkI-aAvHpbbr7U3i6ItcIcXPfqzT7FzCtGmcaTjNwE8_g2NomplnTsnKkoCdJXxRfRydYP6-yJYJ4fJnNncurScunRm1v3h2McrYwGcjwwyPiQIIvW8XdpdEA9rxrgfeJ_RNHhNpNTg3531RpQYXCvfnOprQiFGnuqaG8",
+                  uri: role === "citizen" 
+                    ? "https://lh3.googleusercontent.com/aida-public/AB6AXuDsxxZ7tWtiorEdOPyE36FXiP8jypRF29-cQQeoNHjDFpKcSmU_HJU8kIr38p5OREBlTSX7Fjf8BBMNqbdr2qr6NRCyKVpJF26FEMhQdT1HkI-aAvHpbbr7U3i6ItcIcXPfqzT7FzCtGmcaTjNwE8_g2NomplnTsnKkoCdJXxRfRydYP6-yJYJ4fJnNncurScunRm1v3h2McrYwGcjwwyPiQIIvW8XdpdEA9rxrgfeJ_RNHhNpNTg3531RpQYXCvfnOprQiFGnuqaG8"
+                    : "https://lh3.googleusercontent.com/aida-public/AB6AXuDmjENrAB5IQ3c2Xo9CHxLTG1Zx_wgP7ExXJmB7Kmj71CYaOiI0t7iQF9ibo6i1cY9WmMIHjRJCv_OhCLyiUH5Eml5d2lTOImfkIKJHeLVUIWIuVb1csgOiXIcvCezQF77Cfu-HJg4eUnCjMQMvjZhbUia0NTelqhZTDjEUY992V_wxjgsl2rHbXTQPkDG1lQEyRLoDyAJNLCd2J0550CN_KivV_VtOiFchDlvQLlJ9PgN6a7lsmlgO--ZHDGsz_hJfyQ7qJyk9GGoV",
                 }}
                 style={styles.avatarImage}
               />
@@ -90,19 +113,18 @@ export function PortalLoginScreen({
           </View>
 
           <View style={styles.editorialPanel}>
-            <Text style={styles.gatewayLabel}>Secure Access Gateway</Text>
+            <Text style={styles.gatewayLabel}>{content.gatewayLabel}</Text>
             <Text style={styles.editorialTitle}>
-              The Resilient{"\n"}
-              <Text style={styles.editorialAccent}>Sanctuary</Text>
+              {content.editorialTitle}{"\n"}
+              <Text style={styles.editorialAccent}>{content.editorialAccent}</Text>
             </Text>
             <Text style={styles.editorialText}>
-              Access humanitarian relief protocols, emergency status updates, and
-              personal identification records within our secure environment.
+              {content.editorialText}
             </Text>
 
             <ImageBackground
               source={{
-                uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuDUeDgaq6XCJNBqX0uYoHRejovD-YsgRj9XE5F62qvcrVmANmWRhPjGJdgTgag5gYg96TXaegniq89lq04L0wXvg92nzJmruiEnOyI5oGwyTJzc1503PTnFrS3awvyIO9d95iNTsSSrhrgEqGFrBrR-FuVdXiiqR3Nam6VzDypJIhvd4WOqXhGk_AJtsZpPol5lAkW0P5xFhTUrrykrvIrbQq5cSzalGjM0TO7Y_or_zzhXBQ-9zEQWV2QatioCFDhS4cotqpRETjxM",
+                uri: content.editorialImage,
               }}
               imageStyle={styles.editorialImage}
               style={styles.imageCard}
@@ -110,7 +132,9 @@ export function PortalLoginScreen({
               <View style={styles.imageOverlay} />
               <View style={styles.imageFooter}>
                 <Text style={styles.verifiedIcon}>✓</Text>
-                <Text style={styles.imageFooterText}>Identity Protected System</Text>
+                <Text style={styles.imageFooterText}>
+                  {role === "citizen" ? "Identity Protected System" : "Operational Authority Verified"}
+                </Text>
               </View>
             </ImageBackground>
           </View>
@@ -121,21 +145,21 @@ export function PortalLoginScreen({
               <View style={styles.loginIntro}>
                 <Text style={styles.loginTitle}>Welcome Back</Text>
                 <Text style={styles.loginSubtitle}>
-                  Please authenticate to access your relief dashboard.
+                  Please authenticate to access your {role === "citizen" ? "relief" : "manager"} dashboard.
                 </Text>
               </View>
 
               <View style={styles.fieldGroup}>
-                <Text style={styles.fieldLabel}>Username or Digital ID</Text>
+                <Text style={styles.fieldLabel}>{role === "citizen" ? "Username or Digital ID" : "Username"}</Text>
                 <View style={styles.fieldWrap}>
                   <Text style={styles.fieldIcon}>▣</Text>
                   <TextInput
                     value={citizenId}
                     onChangeText={setCitizenId}
-                    placeholder="DAM-XXXX-XXXX"
+                    placeholder={role === "citizen" ? "DAM-XXXX-XXXX" : "Enter username"}
                     placeholderTextColor="#8f978f"
                     style={styles.fieldInput}
-                    autoCapitalize="characters"
+                    autoCapitalize={role === "citizen" ? "characters" : "none"}
                   />
                 </View>
               </View>
@@ -235,8 +259,19 @@ export function PortalLoginScreen({
       </SectionCard>
 
       <SectionCard>
-        <Input label="Username" placeholder="Enter username" />
-        <Input label="Password" placeholder="********" secureTextEntry />
+        <Input 
+          label="Username" 
+          placeholder="Enter username" 
+          value={citizenId}
+          onChangeText={setCitizenId}
+        />
+        <Input 
+          label="Password" 
+          placeholder="********" 
+          secureTextEntry 
+          value={password}
+          onChangeText={setPassword}
+        />
         <View style={styles.actions}>
           <Button label={content.action} onPress={onSubmit} />
           {onSecondary && secondaryLabel ? (

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Image, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { Image, Pressable, Switch, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { Button, Screen } from "../../../components/UI";
 import { CitizenBottomNav } from "../../shared";
+import { theme, fonts } from "../../../theme";
 import { styles } from "../styles/CitizenIndividualRegistrationScreen.styles";
 
 const avatarUri =
@@ -21,31 +23,32 @@ export function CitizenIndividualRegistrationScreen({
 
   return (
     <Screen>
+      {/* Top Bar */}
       <View style={styles.topBar}>
         <View style={styles.topBarLeft}>
           <Pressable onPress={onBack} style={styles.topButton}>
-            <Text style={styles.topButtonIcon}>|||</Text>
+            <Ionicons name="arrow-back" size={22} color={theme.primary} />
           </Pressable>
-          <Text style={styles.topBarTitle}>Citizen Hub</Text>
+          <Text style={styles.topBarTitle}>Digital ID</Text>
         </View>
-
         <View style={styles.avatarWrap}>
           <Image source={{ uri: avatarUri }} style={styles.avatarImage} />
         </View>
       </View>
-      <View style={styles.topDivider} />
 
+      {/* Success Hero */}
       <View style={styles.heroSection}>
         <View style={styles.successBadge}>
-          <Text style={styles.successBadgeIcon}>OK</Text>
+          <Ionicons name="checkmark" size={32} color={theme.primary} />
         </View>
-        <Text style={styles.heroTitle}>Your Personal ID is Ready</Text>
+        <Text style={styles.heroTitle}>Your Personal{"  \n"}ID is Ready</Text>
         <Text style={styles.heroCopy}>
           Registration complete. This QR ID serves as your digital key for relief
           goods, medical assistance, and emergency shelter access.
         </Text>
       </View>
 
+      {/* ID Card */}
       <View style={styles.cardShell}>
         <View style={styles.cardGlow} />
         <View style={styles.idCard}>
@@ -77,7 +80,7 @@ export function CitizenIndividualRegistrationScreen({
                 <View style={styles.detailMiniBlock}>
                   <Text style={styles.detailLabel}>Status</Text>
                   <View style={styles.verifiedRow}>
-                    <Text style={styles.verifiedIcon}>V</Text>
+                    <Ionicons name="checkmark-circle" size={16} color={theme.primary} />
                     <Text style={styles.verifiedText}>Verified</Text>
                   </View>
                 </View>
@@ -90,7 +93,7 @@ export function CitizenIndividualRegistrationScreen({
 
               <View style={styles.regionBlock}>
                 <View style={styles.regionIconWrap}>
-                  <Text style={styles.regionIcon}>L</Text>
+                  <Ionicons name="location" size={18} color="#7e5700" />
                 </View>
                 <View>
                   <Text style={styles.detailLabel}>Registered Region</Text>
@@ -102,11 +105,12 @@ export function CitizenIndividualRegistrationScreen({
         </View>
       </View>
 
+      {/* Actions */}
       <View style={styles.actionsSection}>
         <View style={styles.toggleCard}>
           <View style={styles.toggleLeft}>
             <View style={styles.toggleIconWrap}>
-              <Text style={styles.toggleIcon}>!</Text>
+              <Ionicons name="notifications" size={22} color="#7e5700" />
             </View>
             <View>
               <Text style={styles.toggleTitle}>Enable Alerts</Text>
@@ -117,13 +121,13 @@ export function CitizenIndividualRegistrationScreen({
           <Switch
             value={alertsEnabled}
             onValueChange={setAlertsEnabled}
-            trackColor={{ false: "#e2e3de", true: "#0d631b" }}
+            trackColor={{ false: "#e2e3de", true: theme.primary }}
             thumbColor="#ffffff"
           />
         </View>
 
         <Pressable style={styles.primaryAction}>
-          <Text style={styles.primaryActionIcon}>DL</Text>
+          <Ionicons name="download" size={20} color="#ffffff" />
           <Text style={styles.primaryActionText}>Save to Device</Text>
         </Pressable>
 
@@ -134,5 +138,3 @@ export function CitizenIndividualRegistrationScreen({
     </Screen>
   );
 }
-
-

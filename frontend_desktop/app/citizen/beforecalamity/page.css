@@ -763,3 +763,58 @@
     flex-direction: column;
   }
 }
+
+/* =============================================
+   MICRO-ANIMATION ENHANCEMENTS
+   ============================================= */
+
+@keyframes citizenPulse {
+  0%, 100% { box-shadow: 0 0 0 0.45rem rgba(13, 99, 27, 0.14); }
+  50%       { box-shadow: 0 0 0 0.9rem rgba(13, 99, 27, 0.04); }
+}
+.citizen-web-status-dot {
+  animation: citizenPulse 2.4s ease-in-out infinite;
+}
+
+.citizen-web-weather-card,
+.citizen-web-map-card,
+.citizen-web-household-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.citizen-web-weather-card:hover,
+.citizen-web-map-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 52px rgba(26, 28, 25, 0.14);
+}
+.citizen-web-household-card:hover {
+  transform: translateY(-3px);
+}
+
+.citizen-web-primary-action {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.citizen-web-primary-action:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 36px rgba(13, 99, 27, 0.28);
+}
+
+.citizen-web-sidebar-nav a:hover {
+  background: rgba(13, 99, 27, 0.08);
+}
+
+.citizen-web-support-fab {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.citizen-web-support-fab:hover {
+  transform: scale(1.1) rotate(8deg);
+  box-shadow: 0 24px 40px rgba(126, 87, 0, 0.36);
+}
+
+.citizen-web-checkitem {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.citizen-web-checkitem:hover {
+  transform: translateY(-2px);
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(26, 28, 25, 0.06);
+}

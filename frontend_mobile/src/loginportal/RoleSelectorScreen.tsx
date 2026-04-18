@@ -6,11 +6,11 @@ import { roleColors, theme } from "../theme";
 import { AppRoute, PortalRole } from "../types";
 import { styles } from "./RoleSelectorScreen.styles";
 
-const roles: { id: PortalRole; label: string; desc: string; icon: keyof typeof Ionicons.glyphMap }[] = [
-  { id: "admin", label: "Admin", desc: "System monitoring & approvals", icon: "shield-checkmark" },
-  { id: "dispatcher", label: "Dispatcher", desc: "Field & resource coordination", icon: "airplane" },
-  { id: "site_manager", label: "Site Manager", desc: "Intake & logistics operations", icon: "home" },
-  { id: "citizen", label: "Affected Citizen", desc: "Registration & relief access", icon: "people" },
+const roles: { id: PortalRole; label: string; desc: string }[] = [
+  { id: "admin", label: "Admin", desc: "System monitoring & approvals" },
+  { id: "dispatcher", label: "Dispatcher", desc: "Field & resource coordination" },
+  { id: "site_manager", label: "Site Manager", desc: "Intake & logistics operations" },
+  { id: "citizen", label: "Affected Citizen", desc: "Registration & relief access" },
 ];
 
 const routeMap: Record<PortalRole, AppRoute> = {
@@ -48,9 +48,6 @@ export function RoleSelectorScreen({ onNavigate }: { onNavigate: (route: AppRout
               pressed && { transform: [{ scale: 0.98 }], opacity: 0.9 }
             ]}
           >
-            <View style={[styles.iconContainer, { backgroundColor: roleColors[role.id] + "10" }]}>
-              <Ionicons name={role.icon} size={28} color={roleColors[role.id]} />
-            </View>
             <View style={styles.roleCopy}>
               <Text style={styles.roleLabel}>{role.label}</Text>
               <Text style={styles.roleDesc}>{role.desc}</Text>

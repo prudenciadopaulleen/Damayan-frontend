@@ -1,24 +1,22 @@
 import React, { useState } from "react";
 import {
-  Image,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { CitizenBottomNav } from "../../shared";
+import { theme, fonts } from "../../../theme";
 import { styles } from "../styles/CitizenHouseholdMembersScreen.styles";
-
-const familyImageUri =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuACb6xMcSZzNzJTsIvbQnebYQbMcbXWDuBeXFUicBSe1YEjdaoD0q6pfSt_O-v4ihIk-yiS5rs_3rmhCVRjor3VHvc0v5mZ4is348YC4b-Q_DeFuLCqvTsPadkPnRSmNNL0onPc7gzVkhgAfpA-SY9N3wPgeWQHvpVRWvCyvIZXf7qSrbHu23aIGQu459C7d2wvapdb6DOvrBaWk_d3ATAxlGuPhkdBBVk6Fi4_GAAxPdrczA2QiD5A6FL3MS3HBnkK0CZMdS-Mlr4n";
 
 const relationshipOptions = ["Spouse", "Child", "Parent", "Sibling", "Other"];
 const quickNeeds = [
-  { id: "wheelchair", icon: "A", label: "Requires Wheelchair" },
-  { id: "medication", icon: "M", label: "Needs Medication" },
-  { id: "infant", icon: "I", label: "Infant Care" },
+  { id: "wheelchair", icon: "accessibility" as const, label: "Wheelchair" },
+  { id: "medication", icon: "medical" as const, label: "Medication" },
+  { id: "infant", icon: "happy" as const, label: "Infant Care" },
+  { id: "elderly", icon: "person" as const, label: "Elderly" },
 ];
 
 export function CitizenHouseholdMembersScreen({
@@ -29,7 +27,7 @@ export function CitizenHouseholdMembersScreen({
   onContinue: () => void;
 }) {
   const [active] = useState<"home" | "relief" | "qr" | "profile">("home");
-  const [relationship, setRelationship] = useState("Select relationship");
+  const [relationship, setRelationship] = useState("");
   const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
 
   function toggleNeed(needId: string) {
@@ -42,16 +40,18 @@ export function CitizenHouseholdMembersScreen({
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      {/* Top Bar */}
       <View style={styles.topBar}>
         <View style={styles.topBarLeft}>
           <Pressable onPress={onBack} style={styles.iconButton}>
-            <Text style={styles.iconText}>{"<"}</Text>
+            <Ionicons name="arrow-back" size={22} color={theme.text} />
           </Pressable>
-          <Text style={styles.topTitle}>Citizen Registration</Text>
+          <Text style={styles.topTitle}>Household Registration</Text>
         </View>
-        <Text style={styles.brand}>Verdant</Text>
+        <Text style={styles.brand}>DAMAYAN</Text>
       </View>
 
+      {/* Hero */}
       <View style={styles.heroSection}>
         <View style={styles.stepBadge}>
           <Text style={styles.stepBadgeText}>Step 2 of 4</Text>
@@ -67,13 +67,17 @@ export function CitizenHouseholdMembersScreen({
         </Text>
       </View>
 
+      {/* Current Head Member Card */}
       <View style={styles.memberCard}>
         <View style={styles.memberHeader}>
           <View>
             <Text style={styles.memberLabel}>Member 01</Text>
             <Text style={styles.memberTitle}>Household Representative</Text>
           </View>
-          <Text style={styles.memberStatus}>OK</Text>
+          <View style={styles.memberStatusBadge}>
+            <Ionicons name="checkmark-circle" size={16} color={theme.primary} />
+            <Text style={styles.memberStatus}>Verified</Text>
+          </View>
         </View>
 
         <View style={styles.memberGrid}>
@@ -92,12 +96,16 @@ export function CitizenHouseholdMembersScreen({
         </View>
       </View>
 
+      {/* New Member Card */}
       <View style={styles.newMemberCard}>
         <View style={styles.newMemberHeader}>
           <View style={styles.memberNumber}>
             <Text style={styles.memberNumberText}>2</Text>
           </View>
-          <Text style={styles.newMemberTitle}>New Family Member</Text>
+          <View>
+            <Text style={styles.newMemberLabel}>Add Member</Text>
+            <Text style={styles.newMemberTitle}>New Family Member</Text>
+          </View>
         </View>
 
         <View style={styles.formGrid}>
@@ -111,25 +119,25 @@ export function CitizenHouseholdMembersScreen({
           </View>
 
           <View style={styles.fieldWrap}>
-            <Text style={styles.fieldLabel}>Relationship</Text>
-            <View style={styles.selectField}>
-              <Text
-                style={[
-                  styles.selectText,
-                  relationship === "Select relationship" && styles.placeholderText,
-                ]}
-              >
-                {relationship}
-              </Text>
-            </View>
+            <Text style={styles.fieldLabel}>Relationship to Head</Text>
             <View style={styles.relationshipRow}>
               {relationshipOptions.map((option) => (
                 <Pressable
                   key={option}
                   onPress={() => setRelationship(option)}
-                  style={styles.relationshipChip}
+                  style={[
+                    styles.relationshipChip,
+                    relationship === option && styles.relationshipChipActive,
+                  ]}
                 >
-                  <Text style={styles.relationshipChipText}>{option}</Text>
+                  <Text
+                    style={[
+                      styles.relationshipChipText,
+                      relationship === option && styles.relationshipChipTextActive,
+                    ]}
+                  >
+                    {option}
+                  </Text>
                 </Pressable>
               ))}
             </View>
@@ -144,22 +152,11 @@ export function CitizenHouseholdMembersScreen({
               style={styles.inputField}
             />
           </View>
-
-          <View style={styles.fieldWrap}>
-            <Text style={styles.fieldLabel}>Specific Needs</Text>
-            <View style={styles.inputWithIcon}>
-              <TextInput
-                placeholder="e.g. Requires Wheelchair"
-                placeholderTextColor="#7d867b"
-                style={styles.iconInputField}
-              />
-              <Text style={styles.inputIcon}>+</Text>
-            </View>
-          </View>
         </View>
 
+        {/* Quick Accessibility Needs */}
         <View style={styles.quickSelectSection}>
-          <Text style={styles.fieldLabel}>Quick Select Accessibility</Text>
+          <Text style={styles.fieldLabel}>Quick Select Accessibility Needs</Text>
           <View style={styles.quickSelectRow}>
             {quickNeeds.map((need) => {
               const selected = selectedNeeds.includes(need.id);
@@ -172,14 +169,11 @@ export function CitizenHouseholdMembersScreen({
                     selected && styles.needChipActive,
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.needChipIcon,
-                      selected && styles.needChipIconActive,
-                    ]}
-                  >
-                    {need.icon}
-                  </Text>
+                  <Ionicons
+                    name={need.icon}
+                    size={16}
+                    color={selected ? "#fff" : theme.textMuted}
+                  />
                   <Text
                     style={[
                       styles.needChipText,
@@ -195,20 +189,22 @@ export function CitizenHouseholdMembersScreen({
         </View>
       </View>
 
+      {/* Action Row */}
       <View style={styles.actionRow}>
         <Pressable style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonIcon}>+</Text>
+          <Ionicons name="add" size={20} color={theme.text} />
           <Text style={styles.secondaryButtonText}>Add Another Member</Text>
         </Pressable>
 
         <Pressable onPress={onContinue} style={styles.primaryButton}>
           <Text style={styles.primaryButtonText}>Complete Household</Text>
-          <Text style={styles.primaryButtonArrow}>-&gt;</Text>
+          <Ionicons name="arrow-forward" size={20} color="#fff" />
         </Pressable>
       </View>
 
+      {/* Info Sidebar */}
       <View style={styles.sidebarCard}>
-        <Text style={styles.sidebarIcon}>i</Text>
+        <Ionicons name="information-circle" size={24} color={theme.primary} />
         <Text style={styles.sidebarTitle}>Why this matters</Text>
         <Text style={styles.sidebarCopy}>
           Accurate household data helps emergency responders calculate food
@@ -217,9 +213,10 @@ export function CitizenHouseholdMembersScreen({
         </Text>
       </View>
 
+      {/* Privacy Card */}
       <View style={styles.privacyCard}>
         <View style={styles.privacyHeader}>
-          <Text style={styles.privacyIcon}>S</Text>
+          <Ionicons name="shield-checkmark" size={20} color="#7e5700" />
           <Text style={styles.privacyTitle}>Privacy Policy</Text>
         </View>
         <Text style={styles.privacyCopy}>
@@ -233,5 +230,3 @@ export function CitizenHouseholdMembersScreen({
     </ScrollView>
   );
 }
-
-

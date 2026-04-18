@@ -25,11 +25,10 @@ const checklist = [
 ];
 
 const sidebarLinks = [
-  { label: "Home", href: "/citizen/beforecalamity", key: "home" },
-  { label: "Risk Map", href: "/citizen/beforecalamity#sector-map", key: "risk-map" },
-  { label: "Checklists", href: "/citizen/beforecalamity#checklists", key: "checklists" },
-  { label: "Reporting", href: "/citizen/duringcalamity#tickets", key: "reporting" },
-  { label: "Support", href: "/citizen/duringcalamity#broadcast", key: "support" },
+  { label: "Home", href: "/citizen/beforecalamity", key: "home", icon: "H" },
+  { label: "Checklists", href: "/citizen/beforecalamity#checklists", key: "checklists", icon: "C" },
+  { label: "Reporting", href: "/citizen/duringcalamity", key: "reporting", icon: "R" },
+  { label: "Support", href: "/citizen/duringcalamity#broadcast", key: "support", icon: "S" },
 ];
 
 export default function CitizenBeforeCalamityPage() {
@@ -125,7 +124,7 @@ export default function CitizenBeforeCalamityPage() {
               onClick={() => setActiveSidebarItem(item.key)}
             >
               <span className="citizen-web-nav-icon" aria-hidden="true">
-                {index === 0 ? "H" : index === 1 ? "M" : index === 2 ? "C" : index === 3 ? "R" : "S"}
+                {item.icon}
               </span>
               <span>{item.label}</span>
             </Link>
@@ -140,7 +139,7 @@ export default function CitizenBeforeCalamityPage() {
         <header className="citizen-web-topbar">
           <div className="citizen-web-topbar-inner">
             <div className="citizen-web-topbar-copy">
-              <Link className="citizen-web-logo" href="/citizen/beforecalamity">ReliefConnect</Link>
+              <Link className="citizen-web-logo" href="/citizen/beforecalamity">Damayan Connect</Link>
               <p>Preparedness dashboard</p>
             </div>
             <div className="citizen-web-topactions">

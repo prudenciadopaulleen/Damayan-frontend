@@ -118,25 +118,27 @@ export default function DuringCalamityPage() {
       </aside>
 
       <main className="response-main">
-        <header className="response-topbar">
-          <div className="response-topbar-left">
-            <span className="response-topbar-title">Humanitarian Response</span>
-            <nav className="response-topbar-nav">
-              <button className="is-active" type="button">
-                Phases
-              </button>
-              <button type="button">Resources</button>
-              <button type="button">Team</button>
-            </nav>
+        <header className="preparedness-topbar">
+          <div className="topbar-left">
+            <span className="topbar-title">Evacuation Management</span>
+            <div className="topbar-search">
+              <span className="topbar-search-icon">S</span>
+              <input
+                type="text"
+                placeholder="Search evacuees or shelters..."
+              />
+            </div>
           </div>
 
-          <div className="response-topbar-right">
-            <button type="button">N</button>
-            <button type="button">H</button>
-            <button className="response-deploy-button" type="button">
-              Deploy Team
-            </button>
-            <div className="response-avatar">SM</div>
+          <div className="topbar-center">
+            <button className="is-active" type="button">Phases</button>
+            <button type="button">Resources</button>
+            <button type="button">Team</button>
+          </div>
+
+          <div className="topbar-right">
+            <span className="topbar-divider" />
+            <div className="topbar-avatar">SM</div>
           </div>
         </header>
 
@@ -152,7 +154,7 @@ export default function DuringCalamityPage() {
                   <span>Critical Window: 04:22:10 remaining</span>
                 </div>
               </div>
-              <h1>Calamity Oversight</h1>
+              <h1>Live Status Map</h1>
               <p>
                 Live operational view of Typhoon 09B impact zone. Resources are
                 being prioritized for Zone A-4 flooding.
@@ -174,9 +176,9 @@ export default function DuringCalamityPage() {
           <section className="swimlane-card">
             <div className="swimlane-header">
               <div>
-                <h2>During Calamity Flow</h2>
+                <h2>Dashboard Guide</h2>
                 <p>
-                  This view follows the swimlane: evacuee arrival, identity
+                  This view follows the daily process: evacuee arrival, identity
                   capture, site capacity updates, relief distribution, and
                   incident reporting.
                 </p>
@@ -211,10 +213,10 @@ export default function DuringCalamityPage() {
           <section className="scanner-flow-card">
             <div className="scanner-flow-header">
               <div>
-                <h2>Check-In Scanner Station</h2>
+                <h2>Evacuee Check-in Station</h2>
                 <p>
-                  Active intake point for evacuee arrivals. Operators can scan
-                  QR credentials or switch to manual logging when needed.
+                  Active intake point for arrivals. Operators can scan
+                  QR codes or switch to manual logging when needed.
                 </p>
               </div>
               <div className="scanner-flow-status">
@@ -236,8 +238,8 @@ export default function DuringCalamityPage() {
                   </div>
                 </div>
                 <div className="scanner-device-footer">
-                  <strong>QR Intake Scanner</strong>
-                  <span>Camera aligned and ready for evacuee ID scanning.</span>
+                  <strong>QR Check-in Camera</strong>
+                  <span>Camera aligned and ready for ID scanning.</span>
                 </div>
               </article>
 
@@ -266,8 +268,8 @@ export default function DuringCalamityPage() {
                 </div>
                 <div className="scanner-followup">
                   {checkInMode === "scan"
-                    ? "Scanner mode is active. Use the camera station to capture evacuee QR credentials."
-                    : "Manual backup is active. Enter evacuee details below when no QR code is available."}
+                    ? "Scanner active. Use the camera to capture evacuee QR codes."
+                    : "Manual backup active. Enter evacuee details below."}
                 </div>
               </div>
 
@@ -443,7 +445,7 @@ export default function DuringCalamityPage() {
                 </div>
 
                 <button className="response-history-button" type="button">
-                  View Historical Logs
+                  View Past Alerts
                 </button>
               </div>
             </aside>

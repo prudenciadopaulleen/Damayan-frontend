@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
+import { useState } from "react";
 
 export default function CitizenLoginPage() {
   const router = useRouter();
+  const [showPass, setShowPass] = useState(false);
 
   function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -13,85 +14,103 @@ export default function CitizenLoginPage() {
   }
 
   return (
-    <main className="citizen-entry-page">
-      <section className="citizen-entry-layout">
-        <aside className="citizen-entry-brand">
-          <div className="citizen-entry-brand-head">
-            <div className="citizen-entry-mark">D</div>
+    <main className="auth-root citizen-auth">
+      {/* Decorative blobs */}
+      <div className="auth-blob auth-blob-1" />
+      <div className="auth-blob auth-blob-2" />
+
+      {/* Brand Panel */}
+      <aside className="auth-brand">
+        <div className="auth-brand-inner">
+          <div className="auth-logo">
+            <div className="auth-logo-mark">D</div>
             <div>
-              <span className="citizen-entry-name">DAMAYAN</span>
-              <p className="citizen-entry-kicker">Affected Citizen Portal</p>
+              <span className="auth-logo-name">DAMAYAN</span>
+              <p className="auth-logo-sub">Affected Citizen Portal</p>
             </div>
           </div>
 
-          <div className="citizen-entry-brand-copy">
-            <p className="citizen-entry-eyebrow">Community Preparedness Access</p>
-            <h1>Stay Ready, Stay Connected.</h1>
-            <p>Access alerts, QR ID, and support updates in one place.</p>
+          <div className="auth-brand-copy">
+            <p className="auth-eyebrow">Community Emergency Access</p>
+            <h1 className="auth-headline">Stay Ready.<br />Stay Safe.<br />
+              <span className="auth-headline-accent">Stay Connected.</span>
+            </h1>
+            <p className="auth-subline">
+              Access real-time alerts, your QR ID, evacuation routes, and
+              relief aid updates — all in one place.
+            </p>
           </div>
 
-        </aside>
+        </div>
+      </aside>
 
-        <section className="citizen-entry-panel">
-          <div className="citizen-entry-mobile-head">
-            <div className="citizen-entry-mark citizen-entry-mark-mobile">D</div>
-            <span className="citizen-entry-name citizen-entry-name-mobile">
-              DAMAYAN
-            </span>
+      {/* Form Panel */}
+      <section className="auth-panel">
+        <div className="auth-panel-inner">
+          <div className="auth-mobile-logo">
+            <div className="auth-logo-mark">D</div>
+            <span className="auth-logo-name" style={{ color: "#2e7d32" }}>DAMAYAN</span>
           </div>
 
-          <header className="citizen-entry-intro">
-            <span className="citizen-entry-badge">Login</span>
-            <h2>Affected Citizen Access</h2>
-            <p>Sign in to continue to your citizen dashboard.</p>
+          <header className="auth-form-head">
+            <span className="auth-badge">Citizen Login</span>
+            <h2 className="auth-form-title">Welcome back</h2>
+            <p className="auth-form-sub">Sign in to access your citizen dashboard.</p>
           </header>
 
-          <div className="citizen-entry-return">
-            <span>Need a staff portal instead?</span>
-            <Link href="/loginportal">Open staff login</Link>
+          <div className="auth-switch-bar">
+            <span>Need a staff portal?</span>
+            <Link href="/loginportal">Open role selector →</Link>
           </div>
 
-          <article className="citizen-entry-card">
-            <div className="citizen-entry-card-top">
-              <h3>Already Registered</h3>
-              <p>Enter your account details below.</p>
+          <form className="auth-form" onSubmit={handleLogin}>
+            <div className="auth-field">
+              <label htmlFor="citizen-username">Username</label>
+              <input
+                id="citizen-username"
+                name="citizen-username"
+                type="text"
+                placeholder="e.g. juan.delacruz"
+                autoComplete="username"
+              />
             </div>
 
-            <form className="citizen-entry-form" onSubmit={handleLogin}>
-              <div className="citizen-entry-field">
-                <label htmlFor="citizen-username">Username</label>
-                <input
-                  id="citizen-username"
-                  name="citizen-username"
-                  type="text"
-                  placeholder="juan.delacruz"
-                />
+            <div className="auth-field">
+              <div className="auth-field-row">
+                <label htmlFor="citizen-password">Password</label>
+                <Link href="/citizen/forgot-password" className="auth-forgot-link">
+                  Forgot password?
+                </Link>
               </div>
-
-              <div className="citizen-entry-field">
-                <div className="citizen-entry-field-row">
-                  <label htmlFor="citizen-password">Password</label>
-                  <button type="button">Forgot password?</button>
-                </div>
+              <div className="auth-input-wrap">
                 <input
                   id="citizen-password"
                   name="citizen-password"
-                  type="password"
-                  placeholder="********"
+                  type={showPass ? "text" : "password"}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
                 />
+                <button
+                  type="button"
+                  className="auth-toggle-pass"
+                  onClick={() => setShowPass((v) => !v)}
+                  aria-label="Toggle password visibility"
+                >
+                  {showPass ? "Hide" : "Show"}
+                </button>
               </div>
+            </div>
 
-              <button className="citizen-entry-primary" type="submit">
-                Log In To Citizen Dashboard
-              </button>
-            </form>
+            <button className="auth-submit" type="submit">
+              Sign In to Citizen Dashboard
+            </button>
+          </form>
 
-            <p className="citizen-entry-switch-copy">
-              If you do not have an account,{" "}
-              <Link href="/citizen/signup">create an account</Link>.
-            </p>
-          </article>
-        </section>
+          <p className="auth-switch-copy">
+            Don&apos;t have an account?{" "}
+            <Link href="/citizen/signup">Create one here</Link>
+          </p>
+        </div>
       </section>
     </main>
   );

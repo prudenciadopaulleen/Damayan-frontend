@@ -14,106 +14,113 @@ export default function SiteManagerSignupPage() {
   }
 
   return (
-    <main className="sitemanager-signup-web-page">
-      <section className="sitemanager-signup-web-layout">
-        <aside className="sitemanager-signup-web-brand">
-          <div className="sitemanager-signup-web-brand-head">
-            <div className="sitemanager-signup-web-mark">D</div>
+    <main className="auth-root sm-auth">
+      {/* Decorative blobs */}
+      <div className="auth-blob auth-blob-1" />
+      <div className="auth-blob auth-blob-2" />
+
+      <aside className="auth-brand">
+        <div className="auth-brand-inner" style={{ gap: "48px" }}>
+          <div className="auth-logo">
+            <div className="auth-logo-mark" style={{ background: "#1b5e20" }}>D</div>
             <div>
-              <span className="sitemanager-signup-web-name">DAMAYAN</span>
-              <p className="sitemanager-signup-web-kicker">Site Manager Registration</p>
+              <span className="auth-logo-name">DAMAYAN</span>
+              <p className="auth-logo-sub">Site Manager Portal</p>
             </div>
           </div>
 
-          <div className="sitemanager-signup-web-copy">
-            <span className="sitemanager-signup-web-badge">Register</span>
-            <h1>Create A Site Manager Account</h1>
-            <p>
+          <div className="auth-brand-copy">
+            <p className="auth-eyebrow">Operations Command</p>
+            <h1 className="auth-headline">Scale Your<br /><span className="auth-headline-accent" style={{ color: "#ffffff" }}>Response Power.</span></h1>
+            <p className="auth-subline">
               Register for the site manager portal to validate your credentials, manage supply logs, and access the rescue network overview.
             </p>
           </div>
+        </div>
+      </aside>
 
-        </aside>
+      <section className="auth-panel">
+        <div className="auth-panel-inner">
+          <div className="auth-mobile-logo">
+            <div className="auth-logo-mark" style={{ background: "#1b5e20" }}>D</div>
+            <span className="auth-logo-name" style={{ color: "#1b5e20" }}>DAMAYAN</span>
+          </div>
 
-        <section className="sitemanager-signup-web-panel">
-          <header className="sitemanager-signup-web-intro">
-            <h2>Site Manager Registration</h2>
-            <p>
-              Complete the registration form to activate your site operations dashboard and emergency coordination.
-            </p>
+          <header className="auth-form-head">
+            <span className="auth-badge" style={{ background: "rgba(27,94,32,0.1)", color: "#1b5e20" }}>Registration</span>
+            <h2 className="auth-form-title">Manager Account</h2>
+            <p className="auth-form-sub">Complete this form to activate your site operations dashboard.</p>
           </header>
 
-          <article className="sitemanager-signup-web-card">
-            <form className="sitemanager-signup-web-form" onSubmit={handleRegister}>
-              <div className="sitemanager-signup-web-field">
-                <label htmlFor="signup-username">Create username</label>
-                <input
-                  id="signup-username"
-                  name="signup-username"
-                  type="text"
-                  placeholder="site.manager.01"
-                />
-              </div>
+          <form className="auth-form" onSubmit={handleRegister}>
+            <div className="auth-field">
+              <label>Full Name</label>
+              <input type="text" placeholder="Site Manager Full Name" required />
+            </div>
 
-              <div className="sitemanager-signup-web-field">
-                <label htmlFor="signup-password">Create password</label>
-                <input
-                  id="signup-password"
-                  name="signup-password"
-                  type="password"
-                  placeholder="********"
-                />
-              </div>
+            <div className="auth-field">
+              <label>Username</label>
+              <input type="text" placeholder="manager.username" required />
+            </div>
 
-              <div className="sitemanager-signup-web-field">
-                <label htmlFor="signup-id">Upload government ID</label>
-                <div className="sitemanager-signup-web-upload">
-                  <input
-                    className="sitemanager-signup-web-file-input"
-                    id="signup-id"
-                    name="signup-id"
-                    type="file"
-                    accept=".jpg,.jpeg,.png"
-                    onChange={(event) =>
-                      setSelectedIdName(
-                        event.target.files?.[0]?.name ?? "No file selected"
-                      )
-                    }
-                  />
-                  <label
-                    className="sitemanager-signup-web-upload-dropzone"
-                    htmlFor="signup-id"
-                  >
-                    <div className="sitemanager-signup-web-upload-icon">📄</div>
-                    <div className="sitemanager-signup-web-upload-content">
-                      <span className="sitemanager-signup-web-upload-title">
-                        {selectedIdName === "No file selected" 
-                          ? "Upload file or drag here" 
-                          : "File selected"}
-                      </span>
-                      <span className="sitemanager-signup-web-upload-hint">
-                        JPG or PNG • Max 5MB
-                      </span>
-                      {selectedIdName !== "No file selected" && (
-                        <span className="sitemanager-signup-web-upload-name">
-                          {selectedIdName}
-                        </span>
-                      )}
-                    </div>
-                  </label>
+            <div className="auth-field">
+              <label>Password</label>
+              <input type="password" placeholder="Create a secure password" required />
+            </div>
+
+            <div className="auth-field">
+              <label>Government ID (Required for Verification)</label>
+              <div className="auth-input-wrap" style={{ cursor: "pointer" }}>
+                <input
+                  id="signup-id"
+                  type="file"
+                  accept=".jpg,.jpeg,.png"
+                  required
+                  style={{ 
+                    position: "absolute",
+                    inset: 0,
+                    opacity: 0,
+                    cursor: "pointer",
+                    zIndex: 2
+                  }}
+                  onChange={(event) =>
+                    setSelectedIdName(
+                      event.target.files?.[0]?.name ?? "No file selected"
+                    )
+                  }
+                />
+                <div 
+                  className="auth-upload-backdrop" 
+                  style={{ 
+                    width: "100%",
+                    padding: "24px",
+                    borderRadius: "16px",
+                    border: "2px dashed rgba(27,94,32,0.2)",
+                    textAlign: "center",
+                    backgroundColor: "rgba(27,94,32,0.01)",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  <span style={{ fontSize: "2rem", display: "block", marginBottom: "8px" }}>📄</span>
+                  <strong style={{ display: "block", fontSize: "0.95rem", color: "#1b5e20" }}>
+                    {selectedIdName === "No file selected" ? "Upload Official ID" : "ID Cached"}
+                  </strong>
+                  <span style={{ fontSize: "0.8rem", color: "var(--auth-muted)" }}>
+                    {selectedIdName === "No file selected" ? "JPG or PNG • Max 5MB" : selectedIdName}
+                  </span>
                 </div>
               </div>
+            </div>
 
-              <button className="sitemanager-signup-web-primary" type="submit">
-                Submit Registration
-              </button>
-            </form>
+            <button className="auth-submit" type="submit" style={{ background: "#1b5e20" }}>
+              Submit Registration
+            </button>
+          </form>
 
-            <p className="sitemanager-signup-web-login-copy">
-              Already have an account? <Link href="/site-manager/login">Log in here</Link>.
-            </p>
-          </article>
-        </section>
+          <p className="auth-switch-copy" style={{ marginTop: "32px", textAlign: "center" }}>
+            Already have an account? <Link href="/site-manager/login" style={{ color: "#1b5e20" }}>Log in here</Link>
+          </p>
+        </div>
       </section>
     </main>
   );

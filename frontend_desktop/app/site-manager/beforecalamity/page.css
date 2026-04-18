@@ -1022,3 +1022,65 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* =============================================
+   SITE MANAGER — MICRO-ANIMATION ENHANCEMENTS
+   ============================================= */
+
+/* Animated progress bars */
+@keyframes progressFill {
+  from { width: 0; }
+}
+.progress-fill {
+  animation: progressFill 1.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Scanner ready pulse */
+@keyframes smPulse {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(13, 99, 27, 0.12); }
+  50%       { box-shadow: 0 0 0 12px rgba(13, 99, 27, 0.04); }
+}
+.scanner-prep-dot {
+  animation: smPulse 2.4s ease-in-out infinite;
+}
+
+/* Card hover elevation */
+.inventory-item,
+.hero-metric-card,
+.priority-card,
+.deployment-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.inventory-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px rgba(26, 28, 25, 0.1);
+}
+.priority-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 44px rgba(26, 28, 25, 0.1);
+}
+
+/* Sidebar nav transition */
+.preparedness-nav button {
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+.preparedness-nav button:hover {
+  transform: translateX(3px);
+}
+
+/* Phase transition link hover */
+.phase-transition-link {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.phase-transition-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(46, 125, 50, 0.28);
+}
+
+/* Map zone shimmer */
+.map-card {
+  transition: box-shadow 0.22s ease;
+}
+.map-card:hover {
+  box-shadow: 0 40px 60px rgba(26, 28, 25, 0.12);
+}

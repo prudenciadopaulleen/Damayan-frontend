@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { CitizenBottomNav } from "../../shared";
+import { theme, fonts } from "../../../theme";
 import { styles } from "../styles/CitizenHouseholdRegistrationScreen.styles";
 
-const backgroundUri =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuC--5f9c3_GRfzlSPjisj7YAsAyhZwu63BDlzdjwfjjAqWG4v1Hy5a8NnY5TDUoVugC2ldLKxupmgehjjXUscnnmu2spH1UBsXN90N-5-1bms_G2Z1MwkjLaiIlEFRk3fLuIhsTLLS5yAWQvO4DWauAQARcP8_Bf3H8Tub_I_y0VluHWEU3GVQ9Z9DmuaZXBzdpacrMglmtyvymi-YsYmCwk_36lFPKCex5OZmaHlr0g4UVH8IHv8p7Kpy0aadbPnfpfYgjpg0Vu1IW";
-
-const bloodTypes = ["A+", "A-", "B+", "O+"];
-const genderOptions = ["Select", "Female", "Male", "Non-binary", "Prefer not to say"];
+const bloodTypes = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+const genderOptions = ["Female", "Male", "Non-binary", "Prefer not to say"];
 
 export function CitizenHouseholdRegistrationScreen({
   onBack,
@@ -17,25 +16,29 @@ export function CitizenHouseholdRegistrationScreen({
   onContinue: () => void;
 }) {
   const [active] = useState<"home" | "relief" | "qr" | "profile">("home");
-  const [gender, setGender] = useState("Select");
-  const [bloodType, setBloodType] = useState("A+");
+  const [gender, setGender] = useState("");
+  const [bloodType, setBloodType] = useState("O+");
   const [consent, setConsent] = useState(false);
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      {/* Top Bar */}
       <View style={styles.topBar}>
         <View style={styles.topLeft}>
           <Pressable onPress={onBack} style={styles.iconButton}>
-            <Text style={styles.iconText}>{"<"}</Text>
+            <Ionicons name="arrow-back" size={22} color={theme.text} />
           </Pressable>
           <Text style={styles.topTitle}>Citizen Registration</Text>
         </View>
-        <Text style={styles.brand}>Verdant Relief</Text>
+        <Text style={styles.brand}>DAMAYAN</Text>
       </View>
 
+      {/* Hero */}
       <View style={styles.heroSection}>
-        <Text style={styles.stepLabel}>Step 01 / Registration</Text>
-        <Text style={styles.heroTitle}>Personal Identity Profile</Text>
+        <View style={styles.stepBadgeWrap}>
+          <Text style={styles.stepLabel}>Step 01 / Registration</Text>
+        </View>
+        <Text style={styles.heroTitle}>Personal Identity{"\n"}Profile</Text>
         <Text style={styles.heroCopy}>
           Your health and identity are vital for coordinating relief. Please
           provide accurate details to ensure medical responders have the context
@@ -43,6 +46,7 @@ export function CitizenHouseholdRegistrationScreen({
         </Text>
       </View>
 
+      {/* Personal Info Form */}
       <View style={styles.formSection}>
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>Full Legal Name</Text>
@@ -53,31 +57,41 @@ export function CitizenHouseholdRegistrationScreen({
           />
         </View>
 
-        <View style={styles.row}>
-          <View style={[styles.fieldGroup, styles.rowLarge]}>
-            <Text style={styles.fieldLabel}>Date of Birth</Text>
-            <TextInput placeholder="YYYY-MM-DD" placeholderTextColor="#7d867b" style={styles.textField} />
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Date of Birth</Text>
+          <View style={styles.fieldWithIcon}>
+            <TextInput
+              placeholder="YYYY-MM-DD"
+              placeholderTextColor="#7d867b"
+              style={styles.fieldInputFlex}
+            />
+            <Ionicons name="calendar-outline" size={20} color={theme.textLight} />
           </View>
-          <View style={[styles.fieldGroup, styles.rowSmall]}>
-            <Text style={styles.fieldLabel}>Gender Identity</Text>
-            <View style={styles.selectField}>
-              <Text style={[styles.selectText, gender === "Select" && styles.placeholderText]}>{gender}</Text>
-            </View>
-            <View style={styles.optionRow}>
-              {genderOptions.slice(1).map((option) => (
-                <Pressable key={option} onPress={() => setGender(option)} style={styles.optionChip}>
-                  <Text style={styles.optionChipText}>{option}</Text>
-                </Pressable>
-              ))}
-            </View>
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Gender Identity</Text>
+          <View style={styles.optionRow}>
+            {genderOptions.map((option) => (
+              <Pressable
+                key={option}
+                onPress={() => setGender(option)}
+                style={[styles.optionChip, gender === option && styles.optionChipActive]}
+              >
+                <Text style={[styles.optionChipText, gender === option && styles.optionChipTextActive]}>
+                  {option}
+                </Text>
+              </Pressable>
+            ))}
           </View>
         </View>
       </View>
 
+      {/* Medical Card */}
       <View style={styles.medicalCard}>
         <View style={styles.medicalHeader}>
           <View style={styles.medicalIconWrap}>
-            <Text style={styles.medicalIcon}>+</Text>
+            <Ionicons name="medkit" size={24} color={theme.primary} />
           </View>
           <View style={styles.medicalHeaderCopy}>
             <Text style={styles.medicalTitle}>Critical Medical Data</Text>
@@ -114,7 +128,7 @@ export function CitizenHouseholdRegistrationScreen({
               multiline
               numberOfLines={4}
               textAlignVertical="top"
-              placeholder="List any chronic conditions (e.g., Diabetes, Asthma) or severe allergies (e.g., Penicillin, Peanuts)..."
+              placeholder="List any chronic conditions (e.g., Diabetes, Asthma) or severe allergies..."
               placeholderTextColor="#7d867b"
               style={styles.textArea}
             />
@@ -122,9 +136,10 @@ export function CitizenHouseholdRegistrationScreen({
         </View>
       </View>
 
-      <Pressable onPress={() => setConsent((value) => !value)} style={styles.consentRow}>
+      {/* Consent */}
+      <Pressable onPress={() => setConsent((v) => !v)} style={styles.consentRow}>
         <View style={[styles.checkbox, consent && styles.checkboxActive]}>
-          {consent ? <Text style={styles.checkboxMark}>✓</Text> : null}
+          {consent ? <Ionicons name="checkmark" size={14} color="#fff" /> : null}
         </View>
         <Text style={styles.consentText}>
           I certify that the information provided is accurate. I understand this data
@@ -133,10 +148,11 @@ export function CitizenHouseholdRegistrationScreen({
         </Text>
       </Pressable>
 
+      {/* Action */}
       <View style={styles.actionSection}>
-        <Pressable onPress={onContinue} style={styles.primaryButton}>
+        <Pressable onPress={onContinue} style={[styles.primaryButton, !consent && styles.primaryButtonDisabled]}>
           <Text style={styles.primaryButtonText}>Continue Registration</Text>
-          <Text style={styles.primaryButtonArrow}>-&gt;</Text>
+          <Ionicons name="arrow-forward" size={20} color="#fff" />
         </Pressable>
       </View>
 
@@ -144,5 +160,3 @@ export function CitizenHouseholdRegistrationScreen({
     </ScrollView>
   );
 }
-
-

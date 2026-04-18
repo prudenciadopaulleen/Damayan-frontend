@@ -1,4 +1,4 @@
-import "./page.css";
+import "../login/page.css";
 import CitizenSignupPage from "./CitizenSignupPage";
 
 export default function Page() {

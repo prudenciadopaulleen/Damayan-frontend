@@ -1,109 +1,455 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
-const sidebarLinks = [
-  { label: "Home", href: "/citizen/beforecalamity", key: "home" },
-  { label: "Risk Map", href: "/citizen/duringcalamity", key: "risk-map" },
-  { label: "Checklists", href: "/citizen/beforecalamity#checklists", key: "checklists" },
-  { label: "Reporting", href: "/citizen/duringcalamity#tickets", key: "reporting" },
-  { label: "Support", href: "/citizen/duringcalamity#broadcast", key: "support" },
+type FlowStep =
+  | "rescue_decision"
+  | "report_incident"
+  | "self_evacuate"
+  | "internet_decision"
+  | "sms_code"
+  | "delivery_confirmation"
+  | "wait_rescue"
+  | "safe_zone_map"
+  | "navigate_evacuation"
+  | "arrive_site"
+  | "credential_check"
+  | "logged_in";
+
+// The longest flow path for progress tracking
+const STEP_ORDER: FlowStep[] = [
+  "rescue_decision",
+  "report_incident",
+  "internet_decision",
+  "delivery_confirmation",
+  "wait_rescue",
+  "arrive_site",
+  "credential_check",
+  "logged_in",
 ];
 
-const tickets = [
-  {
-    icon: "MED",
-    status: "Ready",
-    title: "Medical Kit (Essential)",
-    detail: "Ticket ID: #REL-4029",
-    meta: "Distribution Point A",
-    action: "QR",
-    tone: "primary",
-  },
-  {
-    icon: "WTR",
-    status: "Queued",
-    title: "Potable Water (4L)",
-    detail: "Ticket ID: #REL-4055",
-    meta: "ETA: 45 Mins",
-    action: "ETA",
-    tone: "secondary",
-  },
+const shelterOptions = [
+  { name: "Brgy. Hall Safe Zone", distance: "1.2 km", capacity: "320 / 500", status: "Open" },
+  { name: "San Miguel Elementary", distance: "2.4 km", capacity: "180 / 400", status: "Open" },
 ];
+
+function getStepMeta(step: FlowStep) {
+  switch (step) {
+    case "rescue_decision":
+      return { label: "Safety Check", accent: "danger" };
+    case "report_incident":
+      return { label: "Report Alert", accent: "danger" };
+    case "self_evacuate":
+      return { label: "Find Safe Zone", accent: "safe" };
+    case "internet_decision":
+      return { label: "Internet Connection", accent: "info" };
+    case "sms_code":
+      return { label: "Offline Text Mode", accent: "warning" };
+    case "delivery_confirmation":
+      return { label: "Report Delivered", accent: "safe" };
+    case "wait_rescue":
+      return { label: "Wait For Rescue", accent: "warning" };
+    case "safe_zone_map":
+      return { label: "Safe Zone Map", accent: "safe" };
+    case "navigate_evacuation":
+      return { label: "Navigation", accent: "info" };
+    case "arrive_site":
+      return { label: "Shelter Arrival", accent: "safe" };
+    case "credential_check":
+      return { label: "My QR Code", accent: "safe" };
+    case "logged_in":
+      return { label: "Check-In Complete", accent: "safe" };
+  }
+}
 
 export default function CitizenDuringCalamityPage() {
-  const [activeSidebarItem, setActiveSidebarItem] = useState("risk-map");
+  const [step, setStep] = useState<FlowStep>("rescue_decision");
   
-  // Flowchart State - Linear Operational Flow
-  type FlowStep = 
-    | "INITIAL"           // Is in need of immediate rescue?
-    | "INTERNET_CHECK"    // Is internet available?
-    | "REPORTING_FORM"    // Upload Photo & Location
-    | "SMS_GATEWAY"       // Generate & Send SMS
-    | "WAIT_RESCUE"       // Receive Confirmation -> Wait
-    | "SELF_EVACTUATE"    // View Safe Zone Map -> Navigate
-    | "SITE_ARRIVAL"      // Arrive at Site -> Present Credentials
-    | "QR_PRESENTATION";  // Show Individual/Family QR
-
-  const [flowStep, setFlowStep] = useState<FlowStep>("INITIAL");
-  const [hasInternet, setHasInternet] = useState(true);
+  // State data collected during the flow
+  const [rescueNeeded, setRescueNeeded] = useState<boolean | null>(null);
+  const [internetAvailable, setInternetAvailable] = useState<boolean | null>(null);
   const [identityType, setIdentityType] = useState<"INDIVIDUAL" | "FAMILY" | null>(null);
-  const [startLocation, setStartLocation] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX - mapOffset.x,
-      y: e.clientY - mapOffset.y,
-    });
-  };
+  const previewUrl = useMemo(() => {
+    return selectedFile ? URL.createObjectURL(selectedFile) : null;
+  }, [selectedFile]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    setMapOffset({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y,
-    });
-  };
+  const currentStepIndex = Math.max(STEP_ORDER.indexOf(step), 0);
+  const progress = `${Math.min(((currentStepIndex + 1) / STEP_ORDER.length) * 100, 100)}%`;
+  const stepMeta = getStepMeta(step);
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+  async function handleCopySms() {
+    const code = "DAM-7821";
+    try {
+      await navigator.clipboard.writeText(code);
+      window.alert("Emergency code copied.");
+    } catch {
+      window.alert(`Copy this code manually: ${code}`);
     }
-  };
+  }
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setSelectedFile(e.dataTransfer.files[0]);
+  function renderStepContent() {
+    if (step === "rescue_decision") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Are you in need of immediate rescue?</h2>
+          <p>Choose your current condition so the platform can route you to either an emergency rescue request or a guided self-evacuation path.</p>
+
+          <div className="wizard-choices-grid">
+            <button
+              className="wizard-choice is-danger"
+              onClick={() => {
+                setRescueNeeded(true);
+                setStep("report_incident");
+              }}
+            >
+              <h3>Yes, I need rescue</h3>
+              <p>Report my incident and alert dispatch immediately to my location.</p>
+            </button>
+            <button
+              className="wizard-choice"
+              onClick={() => {
+                setRescueNeeded(false);
+                setStep("self_evacuate");
+              }}
+            >
+              <h3>No, I can self-evacuate</h3>
+              <p>Show the nearest safe zone and the best evacuation route to get there.</p>
+            </button>
+          </div>
+        </div>
+      );
     }
-  };
 
-  useEffect(() => {
-    const hash = window.location.hash;
+    if (step === "report_incident") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Report your emergency</h2>
+          <p>Please describe your situation and upload a photo. This helps dispatchers prioritize your rescue quickly.</p>
 
-    if (hash === "#tickets") {
-      setActiveSidebarItem("reporting");
-      return;
+          <div style={{ marginTop: "2rem" }}>
+            <label style={{ display: "block", fontSize: "1.05rem", fontWeight: 800, color: "#1a1c19", marginBottom: "0.5rem" }}>Incident Description</label>
+            <textarea 
+              placeholder="E.g., Flood waters rising rapidly, need immediate medical assistance for an elderly family member..."
+              style={{ width: "100%", padding: "1.25rem", borderRadius: "1rem", border: "1.5px solid rgba(112, 122, 108, 0.2)", fontSize: "1rem", minHeight: "100px", resize: "vertical", background: "#f9f9f6", fontFamily: "inherit" }}
+            />
+          </div>
+
+          <div className="wizard-upload-area">
+            {selectedFile && previewUrl ? (
+              <div className="wizard-image-preview">
+                <img src={previewUrl} alt="Incident preview" />
+                <button type="button" className="wizard-remove-photo" onClick={() => setSelectedFile(null)}>✕</button>
+                <div className="wizard-photo-badge">✓ Photo Attached</div>
+              </div>
+            ) : (
+              <label className="wizard-upload-box" htmlFor="citizen-report-file">
+                <input
+                  id="citizen-report-file"
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] ?? null;
+                    setSelectedFile(file);
+                  }}
+                />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                <strong>Attach Photo Evidence</strong>
+                <span>Click here or drag and drop an image (Max 10MB)</span>
+              </label>
+            )}
+          </div>
+
+          <div className="wizard-info-stack">
+            <div className="wizard-info-row is-danger">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ba1a1a" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <div className="wizard-info-content">
+                <strong>Current Location Locked</strong>
+                <span>Brgy. 102, District 4 - Zone Red</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="wizard-footer">
+            <button className="wizard-action-btn is-secondary" onClick={() => setStep("rescue_decision")}>Back</button>
+            <button className="wizard-action-btn is-danger" disabled={!selectedFile} onClick={() => setStep("internet_decision")}>Submit Evidence</button>
+          </div>
+        </div>
+      );
     }
 
-    if (hash === "#broadcast") {
-      setActiveSidebarItem("support");
-      return;
+    if (step === "internet_decision") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Ready to Send</h2>
+          <p>We are ready to send your report. Do you have an active internet connection to submit the photo online?</p>
+
+          <div className="wizard-choices-grid">
+            <button
+              className="wizard-choice is-info"
+              onClick={() => {
+                setInternetAvailable(true);
+                setStep("delivery_confirmation");
+              }}
+            >
+              <h3>Yes, I have internet</h3>
+              <p>Send my full report with the photo immediately.</p>
+            </button>
+            <button
+              className="wizard-choice"
+              onClick={() => {
+                setInternetAvailable(false);
+                setStep("sms_code");
+              }}
+            >
+              <h3>No, use text message</h3>
+              <p>Generate an offline text code to send (your photo will be skipped).</p>
+            </button>
+          </div>
+          
+          <div className="wizard-footer">
+            <button className="wizard-action-btn is-secondary" onClick={() => setStep(rescueNeeded ? "report_incident" : "self_evacuate")}>Back</button>
+          </div>
+        </div>
+      );
     }
 
-    setActiveSidebarItem("risk-map");
-  }, []);
+    if (step === "sms_code") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Offline text code ready</h2>
+          <p>Because you have no internet, please send this secure code as a regular text message.</p>
+
+          <div className="wizard-sms-box">
+            <strong>DAM-7821</strong>
+            <span>Text this exact code to hotline <b>143</b>. Do not add any other words.</span>
+          </div>
+
+          <div className="wizard-footer">
+            <button className="wizard-action-btn is-secondary" onClick={() => setStep("internet_decision")}>Back</button>
+            <button className="wizard-action-btn is-secondary" onClick={handleCopySms}>Copy Code</button>
+            <button className="wizard-action-btn is-warning" onClick={() => setStep("delivery_confirmation")}>I&apos;ve Sent The SMS</button>
+          </div>
+        </div>
+      );
+    }
+
+    if (step === "delivery_confirmation") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Report delivered successfully</h2>
+          <p>Your incident has been successfully injected into the municipal response grid. A dispatcher is reviewing your data right now.</p>
+
+          <div className="wizard-info-stack">
+            <div className="wizard-info-row is-safe">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0d631b" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
+              <div className="wizard-info-content">
+                <strong>Dispatcher Assigned</strong>
+                <span>Officer Reyes - Response Unit 4</span>
+              </div>
+            </div>
+            <div className="wizard-info-row is-info">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0061a4" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <div className="wizard-info-content">
+                <strong>Estimated Response Time</strong>
+                <span>12-18 minutes until contact</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="wizard-footer">
+            {/* If rescue is needed, they wait. If they are self-evacuating but reported an incident anyway, they proceed to safe zone */}
+            <button className="wizard-action-btn is-primary" onClick={() => setStep("wait_rescue")}>
+              View Live Status
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (step === "wait_rescue") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Rescue is on the way</h2>
+          <p>Stay near your reported location. Response Unit 4 has secured your coordinates and is currently navigating through Sector B.</p>
+
+          <div className="wizard-info-stack">
+            <div className="wizard-info-row is-info">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0061a4" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <div className="wizard-info-content">
+                <strong>Status: Navigating</strong>
+                <span>ETA: 9 minutes remaining</span>
+              </div>
+            </div>
+            <div className="wizard-info-row is-safe">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0d631b" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <div className="wizard-info-content">
+                <strong>Instructions</strong>
+                <span>Please ensure all household members are ready with IDs.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="wizard-footer">
+            <button className="wizard-action-btn is-primary" onClick={() => setStep("arrive_site")}>Fast-Forward: Arrive at Evacuation Site</button>
+          </div>
+        </div>
+      );
+    }
+
+    // BRANCH: NO Rescue Needed -> Self Evacuate
+    if (step === "self_evacuate") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Prepare for Self-Evacuation</h2>
+          <p>Please secure your belongings and head to the nearest operational safe zone. Your digital ID will be required for check-in.</p>
+
+          <div className="wizard-info-stack">
+            <div className="wizard-info-row is-info">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0061a4" strokeWidth="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+              <div className="wizard-info-content">
+                <strong>Digital ID Ready</strong>
+                <span>Your Damayan QR profile is active offline.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="wizard-footer">
+            <button className="wizard-action-btn is-secondary" onClick={() => setStep("rescue_decision")}>Back</button>
+            <button className="wizard-action-btn is-primary" onClick={() => setStep("safe_zone_map")}>Show Nearest Safe Zones</button>
+          </div>
+        </div>
+      );
+    }
+
+    if (step === "safe_zone_map") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Active Safe Zones</h2>
+          <p>Select the most accessible shelter based on your location and available capacity.</p>
+
+          {shelterOptions.map((zone) => (
+            <div key={zone.name} className="wizard-shelter-card">
+              <div>
+                <h4>{zone.name}</h4>
+                <p>{zone.distance} away - Capacity {zone.capacity}</p>
+              </div>
+              <span className="wizard-shelter-badge">{zone.status}</span>
+            </div>
+          ))}
+
+          <div className="wizard-footer">
+            <button className="wizard-action-btn is-secondary" onClick={() => setStep("self_evacuate")}>Back</button>
+            <button className="wizard-action-btn is-primary" onClick={() => setStep("navigate_evacuation")}>Begin Navigation</button>
+          </div>
+        </div>
+      );
+    }
+
+    if (step === "navigate_evacuation") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Navigation Active</h2>
+          <p>Follow the cleared corridor toward Brgy. Hall Safe Zone. Avoid marked flood zones and follow ground responder instructions.</p>
+
+          <div className="wizard-info-stack">
+            <div className="wizard-info-row is-warning">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#feb300" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <div className="wizard-info-content">
+                <strong>Route Alert</strong>
+                <span>Avoid Flood Zone A. Use the alternate east corridor.</span>
+              </div>
+            </div>
+            <div className="wizard-info-row is-info">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0061a4" strokeWidth="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+              <div className="wizard-info-content">
+                <strong>Travel Estimate</strong>
+                <span>12 minutes remaining on foot.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="wizard-footer">
+            <button className="wizard-action-btn is-secondary" onClick={() => setStep("safe_zone_map")}>Back</button>
+            <button className="wizard-action-btn is-info" onClick={() => setStep("arrive_site")}>I Have Arrived</button>
+          </div>
+        </div>
+      );
+    }
+
+    if (step === "arrive_site") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Welcome to the Shelter</h2>
+          <p>You have successfully reached the evacuation center. Please proceed to the check-in lane to formally register your arrival.</p>
+
+          <div className="wizard-footer">
+            <button className="wizard-action-btn is-primary" onClick={() => setStep("credential_check")}>Present Credentials</button>
+          </div>
+        </div>
+      );
+    }
+
+    if (step === "credential_check") {
+      return (
+        <div className="wizard-panel-body">
+          <h2>Show your QR Code</h2>
+          <p>Please show this digital ID to the shelter staff. Are you checking in just yourself, or your whole family?</p>
+
+          <div className="wizard-qr-box">
+            <div className="wizard-qr-frame">
+              <div className="wizard-qr-img" />
+            </div>
+            <h4>Citizen ID 284-991-001</h4>
+            <p>Elena S. Villacruz - District 2</p>
+          </div>
+
+          <div className="wizard-choices-grid">
+            <button className="wizard-choice is-safe" onClick={() => { setIdentityType("INDIVIDUAL"); setStep("logged_in"); }}>
+              <h3>Just Myself</h3>
+              <p>Check in as an individual.</p>
+            </button>
+            <button className="wizard-choice" onClick={() => { setIdentityType("FAMILY"); setStep("logged_in"); }}>
+              <h3>Whole Family</h3>
+              <p>Check in myself and my family members.</p>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Logged In
+    return (
+      <div className="wizard-panel-body">
+        <h2>{identityType === "INDIVIDUAL" ? "Individual Checked In" : "Household Checked In"}</h2>
+        <p>You have been successfully logged into the municipal shelter system at Brgy. Hall Safe Zone.</p>
+
+        <div className="wizard-info-stack">
+          <div className="wizard-info-row is-safe">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0d631b" strokeWidth="2"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path></svg>
+            <div className="wizard-info-content">
+              <strong>Assigned Space</strong>
+              <span>{identityType === "INDIVIDUAL" ? "Shelter Bay 4B, Cot 12" : "Family Suite F-12"}</span>
+            </div>
+          </div>
+          <div className="wizard-info-row is-safe">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0d631b" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <div className="wizard-info-content">
+              <strong>Meal Schedule</strong>
+              <span>Breakfast 7AM • Lunch 12PM • Dinner 6PM</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="wizard-footer">
+          <button className="wizard-action-btn is-primary" onClick={() => setStep("rescue_decision")}>Return to Dashboard</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="citizen-response-page">
@@ -112,345 +458,52 @@ export default function CitizenDuringCalamityPage() {
           <h1>Citizen Portal</h1>
           <p>Stay Safe, Stay Informed</p>
         </div>
-
         <nav className="citizen-response-sidebar-nav" aria-label="Citizen sections">
-          {sidebarLinks.map((item, index) => (
-            <Link
-              key={item.label}
-              className={activeSidebarItem === item.key ? "is-active" : undefined}
-              href={item.href}
-              onClick={() => {
-                if (item.key === "reporting" || item.key === "support" || item.key === "risk-map") {
-                  setActiveSidebarItem(item.key);
-                }
-              }}
-            >
-              <span className="citizen-response-nav-icon" aria-hidden="true">
-                {index === 0
-                  ? "H"
-                  : index === 1
-                    ? "M"
-                    : index === 2
-                      ? "C"
-                      : index === 3
-                        ? "R"
-                        : "S"}
-              </span>
-              <span>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-
-        <div className="citizen-response-sidebar-footer">
-          <Link className="citizen-response-signout" href="/citizen/login">
-            Sign Out
+          <Link href="/citizen/beforecalamity">
+            <span className="citizen-response-nav-icon">H</span><span>Home</span>
           </Link>
+          <Link href="/citizen/beforecalamity#checklists">
+            <span className="citizen-response-nav-icon">C</span><span>Checklists</span>
+          </Link>
+          <a className="is-active" href="#report" onClick={(e) => { e.preventDefault(); setStep("report_incident"); }}>
+            <span className="citizen-response-nav-icon">R</span><span>Reporting</span>
+          </a>
+          <Link href="#broadcast">
+            <span className="citizen-response-nav-icon">S</span><span>Support</span>
+          </Link>
+        </nav>
+        <div className="citizen-response-sidebar-footer">
+          <Link className="citizen-response-signout" href="/citizen/login">Sign Out</Link>
         </div>
       </aside>
 
-      <div className="citizen-response-shell">
-        <header className="citizen-response-topbar">
-          <div className="citizen-response-topbar-inner">
-            <div className="citizen-response-brand-side">
-              <Link className="citizen-response-logo" href="/citizen/duringcalamity">
-                DAMAYAN
-              </Link>
-              <p className="citizen-response-topbar-label">Emergency response dashboard</p>
-            </div>
+      <main className="wizard-immersive-zone">
+        <div className="wizard-map-background">
+          <div className="wizard-map-image" />
+          <div className="wizard-map-overlay" />
+        </div>
 
-            <div className="citizen-response-actions">
-              <Link className="is-sos" href="#broadcast">
-                Trigger SOS
-              </Link>
-              <Link className="is-report" href="#tickets">
-                Report Incident
-              </Link>
-              <div className="citizen-response-meta-actions">
-                <Link href="#broadcast">Alerts</Link>
-                <Link
-                  className="citizen-response-profile-chip"
-                  href="/citizen/beforecalamity"
-                  aria-label="Open citizen profile"
-                >
-                  <span className="citizen-response-profile-avatar" aria-hidden="true">
-                    CP
-                  </span>
-                  <span className="citizen-response-profile-copy">
-                    <strong>Citizen</strong>
-                    <small>Profile</small>
-                  </span>
-                </Link>
-              </div>
-            </div>
+        <header className="wizard-topbar">
+          <Link className="wizard-logo" href="/citizen/duringcalamity">DAMAYAN Emergency Dashboard</Link>
+          <div className="wizard-topbar-actions">
+            <a className="wizard-btn is-sos" href="#sos" onClick={(e) => { e.preventDefault(); setRescueNeeded(true); setStep("report_incident"); }}>Trigger SOS</a>
+            <a className="wizard-btn is-report" href="#report" onClick={(e) => { e.preventDefault(); setStep("report_incident"); }}>Report Incident</a>
           </div>
         </header>
 
-        <main className={`citizen-response-main ${flowStep === "INITIAL" || flowStep === "INTERNET_CHECK" ? "is-flow-active" : ""}`}>
-          <div className="citizen-response-workspace">
-            <section className="citizen-response-map-zone">
-              {/* Persistent Background Layer */}
-              <div 
-                className={`citizen-response-map-surface ${flowStep !== "SELF_EVACTUATE" ? "is-blurred" : ""}`} 
-                aria-hidden="true"
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-              >
-                <div 
-                   className="citizen-response-map-image is-highlighted" 
-                   style={{ 
-                     transform: `translate(${mapOffset.x}px, ${mapOffset.y}px) scale(${zoomLevel})` 
-                   }}
-                />
+        <section className="wizard-content-area">
+          <div className="wizard-glass-panel">
+            <div className="wizard-panel-header">
+              <span className={`wizard-step-tag is-${stepMeta.accent}`}>{stepMeta.label}</span>
+              <div className="wizard-progress-track" aria-label="Progress Bar">
+                <div className="wizard-progress-fill" style={{ width: progress }} />
               </div>
+            </div>
 
-              {/* Directional & Zoom HUD Overlays - ALWAYS ON TOP (z-index 50) */}
-              <div className="citizen-response-map-hud" style={{ zIndex: 50 }}>
-                <div className="hud-zoom-controls">
-                  <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.2, 3))}>+</button>
-                  <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.2, 0.5))}>-</button>
-                </div>
-                
-                <div className="hud-compass">
-                  <span className="compass-n">N</span>
-                  <span className="compass-e">E</span>
-                  <span className="compass-s">S</span>
-                  <span className="compass-w">W</span>
-                </div>
-              </div>
-
-              {/* Linear Operational Flow Overlays */}
-              {flowStep === "INITIAL" && (
-                <div className="citizen-flow-overlay">
-                  <div className="citizen-flow-card">
-                    <span className="citizen-flow-badge">Operational Flow</span>
-                    <h2>Is in need of immediate rescue?</h2>
-                    <p>Select your condition to prioritize system resources and coordinate with emergency teams.</p>
-                    <div className="citizen-flow-actions">
-                      <button className="btn-rescue" onClick={() => setFlowStep("INTERNET_CHECK")}>
-                         <strong>Yes</strong>
-                         <span>Immediate Help</span>
-                      </button>
-                      <button className="btn-evacuate" onClick={() => setFlowStep("SELF_EVACTUATE")}>
-                         <strong>No</strong>
-                         <span>Self-Evacuate</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {flowStep === "INTERNET_CHECK" && (
-                <div className="citizen-flow-overlay">
-                  <div className="citizen-flow-card">
-                    <h2>Is Internet Available?</h2>
-                    <p>We need to determine the best method to transmit your location data to rescue teams.</p>
-                    <div className="citizen-flow-actions">
-                      <button className="btn-rescue" onClick={() => { setHasInternet(true); setFlowStep("REPORTING_FORM"); }}>
-                         <strong>Yes</strong>
-                         <span>Mobile Data / Wi-Fi</span>
-                      </button>
-                      <button className="btn-evacuate" onClick={() => { setHasInternet(false); setFlowStep("SMS_GATEWAY"); }}>
-                         <strong>No</strong>
-                         <span>SMS Signal Only</span>
-                      </button>
-                    </div>
-                    <button className="btn-text-only" onClick={() => setFlowStep("INITIAL")}>Back to Decision</button>
-                  </div>
-                </div>
-              )}
-
-              {flowStep === "REPORTING_FORM" && (
-                <div className="citizen-flow-overlay">
-                  <div className="citizen-flow-card">
-                    <h2>Upload Photo & Location</h2>
-                    <p>Confirm your surroundings to help rescuers identify your exact position.</p>
-                    <div 
-                       className="report-upload-box" 
-                       onClick={() => document.getElementById("file-upload")?.click()}
-                       onDragOver={(e) => e.preventDefault()}
-                       onDrop={handleDrop}
-                    >
-                       <input type="file" id="file-upload" style={{ display: "none" }} onChange={handleFileChange} />
-                       {selectedFile ? (
-                         <div className="selected-file-info">
-                            <strong>{selectedFile.name}</strong>
-                            <span>Ready to transmit</span>
-                         </div>
-                       ) : (
-                         <span>Drop image here or click to upload</span>
-                       )}
-                    </div>
-                    <button className="btn-submit-flow" disabled={!selectedFile} onClick={() => setFlowStep("WAIT_RESCUE")}>Send Live Report</button>
-                    <button className="btn-text-only" onClick={() => setFlowStep("INTERNET_CHECK")}>Back</button>
-                  </div>
-                </div>
-              )}
-
-              {flowStep === "SMS_GATEWAY" && (
-                <div className="citizen-flow-overlay">
-                  <div className="citizen-flow-card">
-                    <h2>Generate SMS Code</h2>
-                    <p>Copy this emergency packet and send it to our gateway at <strong>#8888</strong> or <strong>+63 917 123 4567</strong>.</p>
-                    <div className="sms-sim-box">
-                       <code>DAMAYAN:RESCUE:14.599,120.984:USER_ID_992</code>
-                       <button className="btn-copy-code" onClick={() => alert("Code Copied!")}>Copy Code</button>
-                    </div>
-                    <button className="btn-submit-flow" onClick={() => setFlowStep("WAIT_RESCUE")}>Send via SMS</button>
-                    <button className="btn-text-only" onClick={() => setFlowStep("INTERNET_CHECK")}>Back</button>
-                  </div>
-                </div>
-              )}
-
-              {flowStep === "WAIT_RESCUE" && (
-                <div className="citizen-flow-overlay">
-                  <div className="citizen-flow-card is-success">
-                    <div className="success-icon">✓</div>
-                    <h2>Report Transmitted</h2>
-                    <p>Receive Delivery Confirmation. Your status is now "Queued for Rescue". Stay calm and wait for the extraction team.</p>
-                    <div className="status-badge">RESCUE ETA: 12 MINS</div>
-                    <button className="btn-submit-flow" onClick={() => setFlowStep("SELF_EVACTUATE")}>View Live Status Map</button>
-                  </div>
-                </div>
-              )}
-
-              {flowStep === "SELF_EVACTUATE" && (
-                <div className="citizen-response-evacuation-flow">
-                   <div className="citizen-response-nav-input">
-                      <h3>Self-Evacuation Path</h3>
-                      <div className="input-group">
-                         <label>Navigate User to Evacuation Site</label>
-                         <input 
-                           type="text" 
-                           placeholder="Finding nearest safe hub..." 
-                           value="Unity High Gymnasium (Shelter A)"
-                           readOnly
-                         />
-                         <button className="btn-navigate" onClick={() => setFlowStep("SITE_ARRIVAL")}>Mark as Arrived</button>
-                      </div>
-                   </div>
-                   
-                   <div className="citizen-response-map-label">
-                     <span>SAFE ZONE MAP</span>
-                     <h4>Sector 4 Evacuation Hub</h4>
-                     <p>Status: Active Reception</p>
-                   </div>
-                </div>
-              )}
-
-              {flowStep === "SITE_ARRIVAL" && (
-                <div className="citizen-flow-overlay">
-                   <div className="citizen-flow-card">
-                      <span className="citizen-flow-badge">Arrival at Site</span>
-                      <h2>Present Credentials</h2>
-                      <p>Show your Digital QR/ID to the site manage to log into the system and access relief supplies.</p>
-                      
-                      <div className="identity-prompt">
-                         <h4>Is the QR for:</h4>
-                         <div className="identity-choices">
-                            <button className={identityType === "INDIVIDUAL" ? "is-selected" : ""} onClick={() => setIdentityType("INDIVIDUAL")}>Individual</button>
-                            <button className={identityType === "FAMILY" ? "is-selected" : ""} onClick={() => setIdentityType("FAMILY")}>Family/Household</button>
-                         </div>
-                      </div>
-
-                      <button className="btn-submit-flow" disabled={!identityType} onClick={() => setFlowStep("QR_PRESENTATION")}>Present QR ID</button>
-                   </div>
-                </div>
-              )}
-
-              {flowStep === "QR_PRESENTATION" && (
-                <div className="citizen-flow-overlay">
-                   <div className="citizen-flow-card qr-view">
-                      <div className="qr-container">
-                         <div className="qr-image" />
-                      </div>
-                      <h3>{identityType === "INDIVIDUAL" ? "Individual Logged Into System" : "Family Logged Into System"}</h3>
-                      <p>Check-in confirmed. You are now registered at Shelter A.</p>
-                      <button className="btn-submit-flow" onClick={() => setFlowStep("INITIAL")}>Return to Dashboard</button>
-                   </div>
-                </div>
-              )}
-
-              {/* Keep map cards as overlay if evacuating */}
-              {flowStep === "SELF_EVACTUATE" && (
-                <div className="citizen-response-map-cards" id="map-cards">
-                  <Link className="citizen-response-map-card is-primary" href="#broadcast">
-                    <div className="citizen-response-map-icon">SH</div>
-                    <div className="citizen-response-map-copy">
-                      <span>Nearest Shelter</span>
-                      <h4>Unity High Gymnasium</h4>
-                      <p>850m - 12 min walk</p>
-                    </div>
-                    <strong>Go</strong>
-                  </Link>
-
-                  <Link className="citizen-response-map-card is-secondary" href="#broadcast">
-                    <div className="citizen-response-map-icon">HZ</div>
-                    <div className="citizen-response-map-copy">
-                      <span>Active Hazard</span>
-                      <h4>Rising Flood Level</h4>
-                      <p>Verdant Relief Alert Zone</p>
-                    </div>
-                    <strong>Info</strong>
-                  </Link>
-                </div>
-              )}
-            </section>
-
-            <aside className={`citizen-response-sidepanel ${["INITIAL", "INTERNET_CHECK", "REPORTING_FORM", "SMS_GATEWAY"].includes(flowStep) ? "is-hidden" : ""}`}>
-              <section className="citizen-response-ticket-panel" id="tickets">
-                <h3>Active Tickets</h3>
-
-                <div className="citizen-response-ticket-list">
-                  {tickets.map((ticket) => (
-                    <article
-                      key={ticket.title}
-                      className={`citizen-response-ticket is-${ticket.tone}`}
-                    >
-                      <div className="citizen-response-ticket-head">
-                        <span className="citizen-response-ticket-icon">
-                          {ticket.icon}
-                        </span>
-                        <strong>{ticket.status}</strong>
-                      </div>
-                      <h4>{ticket.title}</h4>
-                      <p>{ticket.detail}</p>
-
-                      <div className="citizen-response-ticket-meta">
-                        <span>{ticket.meta}</span>
-                        <b>{ticket.action}</b>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-
-              <section className="citizen-response-broadcast" id="broadcast">
-                <h4>System Broadcast</h4>
-                <p>
-                  Flood evacuation phase 2 has commenced. Proceed to Unity High
-                  Gymnasium if water levels reach threshold marker.
-                </p>
-              </section>
-            </aside>
+            {renderStepContent()}
           </div>
-
-          <section className="citizen-response-footer-actions">
-            <Link href="/citizen/beforecalamity">Back To Prepare</Link>
-          </section>
-        </main>
-      </div>
-
-      <nav className="citizen-response-mobile-nav">
-        <Link href="/citizen/beforecalamity">Home</Link>
-        <Link className="is-active" href="/citizen/duringcalamity">
-          Risk Map
-        </Link>
-        <Link href="#broadcast">SOS</Link>
-        <Link href="#tickets">Tasks</Link>
-        <Link href="/citizen/login">Profile</Link>
-      </nav>
+        </section>
+      </main>
     </div>
   );
 }
