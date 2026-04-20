@@ -34,21 +34,31 @@ const roleContent: Record<
     subtitle: "Oversee approvals, system health, and platform coordination.",
     loginLabel: "Admin",
     accent: roleColors.admin,
-    action: "Log In To Admin Dashboard",
+    action: "Continue To Admin Dashboard",
+    gatewayLabel: "System Command Center",
+    editorialTitle: "Platform",
+    editorialAccent: "Governance",
+    editorialText: "System-wide monitoring, administrative overrides, and multi-sector platform reporting dashboard.",
+    editorialImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDt8S8WvV5nZ4zI7nZ0W9q9Q-J1A1Z1E1G1I1K1M1O1Q1S1U1W1Y1a1c1e1g1i1k1m1o1q1s1u1w1y1", // Placeholder
   },
   dispatcher: {
-    title: "Dispatcher Access",
-    subtitle: "Manage tickets, teams, and active field response operations.",
+    title: "Dispatcher Login",
+    subtitle: "Coordinate rescue teams and manage ticket throughput.",
     loginLabel: "Dispatcher",
     accent: roleColors.dispatcher,
-    action: "Continue To Dispatcher Dashboard",
+    action: "Enter Dispatch Terminal",
+    gatewayLabel: "Command & Control",
+    editorialTitle: "Incident",
+    editorialAccent: "Dispatch",
+    editorialText: "Synchronize field resource allocation, monitor active mission status, and manage ticket distribution.",
+    editorialImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDt8S8WvV5nZ4zI7nZ0W9q9Q-J1A1Z1E1G1I1K1M1O1Q1S1U1W1Y1a1c1e1g1i1k1m1o1q1s1u1w1y1", // Placeholder
   },
   site_manager: {
-    title: "Site Manager Access",
+    title: "Site Manager Login",
     subtitle: "Manage shelter readiness, intake, and local distribution.",
     loginLabel: "Site Manager",
     accent: roleColors.site_manager,
-    action: "Log In To Site Manager Dashboard",
+    action: "Enter Manager Dashboard",
     gatewayLabel: "Operational Authority",
     editorialTitle: "Global Operational",
     editorialAccent: "Control",
@@ -56,11 +66,11 @@ const roleContent: Record<
     editorialImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuB7mK6Wlk5tpcz_jg-y_FNS8PaNwyml1WkYUcFxvzRckiijTcFHZ86PvgEvRj5z91SeFpO35w95Xf15h9Te72zdNO_c_pH-SUPMX4S6vwvPbl8QmMKDbrRL0QEyIjDbUkei6wxoM5mR4tV1mIUpd3l_eiEyNBIID90mRxapOumpUbprXPaH5UFcCDYK9tjGxos2cuTC8Enx25m3LklOoLtJ3_jBY0PMnIW53zyJbubc1XMeyAhFTjngNmNce8IUw9kWG3_Iw1rge8vN",
   },
   citizen: {
-    title: "Citizen Access",
+    title: "Citizen Login",
     subtitle: "Sign in for alerts, preparedness info, and relief access.",
     loginLabel: "Citizen",
     accent: roleColors.citizen,
-    action: "Continue To Citizen Dashboard",
+    action: "Access My Portal",
     gatewayLabel: "Secure Access Gateway",
     editorialTitle: "The Resilient",
     editorialAccent: "Sanctuary",
@@ -83,202 +93,151 @@ export function PortalLoginScreen({
   secondaryLabel?: string;
 }) {
   const content = roleContent[role];
-  const [citizenId, setCitizenId] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  if (role === "citizen" || role === "site_manager") {
-    return (
-      <Screen>
-        <View style={styles.citizenShell}>
-          <View style={styles.topBar}>
-            <View style={styles.brandRow}>
-              <Pressable onPress={onBack} style={styles.menuButton}>
-                <Text style={styles.menuButtonText}>≡</Text>
-              </Pressable>
-              <Text style={styles.brandText}>DAMAYAN</Text>
-            </View>
-
-            <View style={styles.roleBadgeRow}>
-              <Text style={styles.roleTag}>{role === "citizen" ? "Affected Citizen" : "Site Manager"}</Text>
-              <Image
-                source={{
-                  uri: role === "citizen" 
-                    ? "https://lh3.googleusercontent.com/aida-public/AB6AXuDsxxZ7tWtiorEdOPyE36FXiP8jypRF29-cQQeoNHjDFpKcSmU_HJU8kIr38p5OREBlTSX7Fjf8BBMNqbdr2qr6NRCyKVpJF26FEMhQdT1HkI-aAvHpbbr7U3i6ItcIcXPfqzT7FzCtGmcaTjNwE8_g2NomplnTsnKkoCdJXxRfRydYP6-yJYJ4fJnNncurScunRm1v3h2McrYwGcjwwyPiQIIvW8XdpdEA9rxrgfeJ_RNHhNpNTg3531RpQYXCvfnOprQiFGnuqaG8"
-                    : "https://lh3.googleusercontent.com/aida-public/AB6AXuDmjENrAB5IQ3c2Xo9CHxLTG1Zx_wgP7ExXJmB7Kmj71CYaOiI0t7iQF9ibo6i1cY9WmMIHjRJCv_OhCLyiUH5Eml5d2lTOImfkIKJHeLVUIWIuVb1csgOiXIcvCezQF77Cfu-HJg4eUnCjMQMvjZhbUia0NTelqhZTDjEUY992V_wxjgsl2rHbXTQPkDG1lQEyRLoDyAJNLCd2J0550CN_KivV_VtOiFchDlvQLlJ9PgN6a7lsmlgO--ZHDGsz_hJfyQ7qJyk9GGoV",
-                }}
-                style={styles.avatarImage}
-              />
-            </View>
-          </View>
-
-          <View style={styles.editorialPanel}>
-            <Text style={styles.gatewayLabel}>{content.gatewayLabel}</Text>
-            <Text style={styles.editorialTitle}>
-              {content.editorialTitle}{"\n"}
-              <Text style={styles.editorialAccent}>{content.editorialAccent}</Text>
-            </Text>
-            <Text style={styles.editorialText}>
-              {content.editorialText}
-            </Text>
-
-            <ImageBackground
-              source={{
-                uri: content.editorialImage,
-              }}
-              imageStyle={styles.editorialImage}
-              style={styles.imageCard}
-            >
-              <View style={styles.imageOverlay} />
-              <View style={styles.imageFooter}>
-                <Text style={styles.verifiedIcon}>✓</Text>
-                <Text style={styles.imageFooterText}>
-                  {role === "citizen" ? "Identity Protected System" : "Operational Authority Verified"}
-                </Text>
-              </View>
-            </ImageBackground>
-          </View>
-
-          <View style={styles.loginCard}>
-            <View style={styles.glowOrb} />
-            <View style={styles.loginCardInner}>
-              <View style={styles.loginIntro}>
-                <Text style={styles.loginTitle}>Welcome Back</Text>
-                <Text style={styles.loginSubtitle}>
-                  Please authenticate to access your {role === "citizen" ? "relief" : "manager"} dashboard.
-                </Text>
-              </View>
-
-              <View style={styles.fieldGroup}>
-                <Text style={styles.fieldLabel}>{role === "citizen" ? "Username or Digital ID" : "Username"}</Text>
-                <View style={styles.fieldWrap}>
-                  <Text style={styles.fieldIcon}>▣</Text>
-                  <TextInput
-                    value={citizenId}
-                    onChangeText={setCitizenId}
-                    placeholder={role === "citizen" ? "DAM-XXXX-XXXX" : "Enter username"}
-                    placeholderTextColor="#8f978f"
-                    style={styles.fieldInput}
-                    autoCapitalize={role === "citizen" ? "characters" : "none"}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.fieldGroup}>
-                <View style={styles.labelRow}>
-                  <Text style={styles.fieldLabel}>Access Key</Text>
-                  <Pressable>
-                    <Text style={styles.helpLink}>Forgot Password?</Text>
-                  </Pressable>
-                </View>
-
-                <View style={styles.fieldWrap}>
-                  <Text style={styles.fieldIcon}>◌</Text>
-                  <TextInput
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder="••••••••••••"
-                    placeholderTextColor="#8f978f"
-                    style={styles.fieldInput}
-                    secureTextEntry={!passwordVisible}
-                  />
-                  <Pressable onPress={() => setPasswordVisible((value) => !value)}>
-                    <Text style={styles.visibilityToggle}>
-                      {passwordVisible ? "Hide" : "Show"}
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
-
-              <View style={styles.actionStack}>
-                <Pressable onPress={onSubmit} style={styles.primaryAction}>
-                  <View style={styles.primaryGradient}>
-                    <Text style={styles.primaryActionText}>Secure Login</Text>
-                    <Text style={styles.primaryActionArrow}>→</Text>
-                  </View>
-                </Pressable>
-
-                {onSecondary && secondaryLabel ? (
-                  <>
-                    <View style={styles.dividerRow}>
-                      <View style={styles.dividerLine} />
-                      <Text style={styles.dividerText}>OR</Text>
-                      <View style={styles.dividerLine} />
-                    </View>
-
-                    <Pressable onPress={onSecondary} style={styles.secondaryAction}>
-                      <Text style={styles.secondaryActionText}>{secondaryLabel}</Text>
-                    </Pressable>
-                  </>
-                ) : null}
-              </View>
-
-              <View style={styles.altAccessSection}>
-                <Text style={styles.altAccessLabel}>Alternative Access</Text>
-                <View style={styles.altButtons}>
-                  <Pressable style={styles.altButton}>
-                    <Text style={styles.altButtonIcon}>◐</Text>
-                  </Pressable>
-                  <Pressable style={styles.altButton}>
-                    <Text style={styles.altButtonIcon}>◉</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.footer}>
-            <View style={styles.footerLinks}>
-              <Pressable>
-                <Text style={styles.footerLink}>Privacy Policy</Text>
-              </Pressable>
-              <Pressable>
-                <Text style={styles.footerLink}>Crisis Support</Text>
-              </Pressable>
-              <Pressable>
-                <Text style={styles.footerLink}>Accessibility</Text>
-              </Pressable>
-            </View>
-            <Text style={styles.footerNote}>
-              © 2024 RELIANCE Humanitarian Network. All Rights Reserved.
-            </Text>
-          </View>
-        </View>
-      </Screen>
-    );
-  }
-
   return (
-    <Screen>
-      <MobileHeader title={content.title} subtitle={content.loginLabel} onBack={onBack} />
+    <Screen style={{ backgroundColor: theme.bg }}>
+      <View style={styles.citizenShell}>
+        {/* Background Blobs */}
+        <View style={[styles.orb, styles.orb1, { backgroundColor: content.accent }]} />
+        <View style={[styles.orb, styles.orb2]} />
 
-      <SectionCard style={{ ...styles.hero, backgroundColor: content.accent }}>
-        <Pill label={content.loginLabel} />
-        <Text style={styles.heroTitle}>{content.title}</Text>
-        <Text style={styles.heroText}>{content.subtitle}</Text>
-      </SectionCard>
+        <View style={styles.topBar}>
+          <View style={styles.brandRow}>
+            <Pressable onPress={onBack} style={styles.menuButton}>
+              <Text style={styles.menuButtonText}>←</Text>
+            </Pressable>
+            <Text style={styles.brandText}>DAMAYAN</Text>
+          </View>
 
-      <SectionCard>
-        <Input 
-          label="Username" 
-          placeholder="Enter username" 
-          value={citizenId}
-          onChangeText={setCitizenId}
-        />
-        <Input 
-          label="Password" 
-          placeholder="********" 
-          secureTextEntry 
-          value={password}
-          onChangeText={setPassword}
-        />
-        <View style={styles.actions}>
-          <Button label={content.action} onPress={onSubmit} />
-          {onSecondary && secondaryLabel ? (
-            <Button label={secondaryLabel} tone="ghost" onPress={onSecondary} />
-          ) : null}
+          <View style={styles.roleBadgeRow}>
+            <Text style={styles.roleTag}>{content.loginLabel}</Text>
+            <View style={styles.avatarIcon}>
+              <Text style={{ fontSize: 18 }}>{role === "citizen" ? "👤" : "🛡️"}</Text>
+            </View>
+          </View>
         </View>
-      </SectionCard>
+
+        <View style={styles.editorialPanel}>
+          <Text style={[styles.gatewayLabel, { color: content.accent }]}>{content.gatewayLabel}</Text>
+          <Text style={styles.editorialTitle}>
+            {content.editorialTitle}{"\n"}
+            <Text style={[styles.editorialAccent, { color: content.accent }]}>{content.editorialAccent}</Text>
+          </Text>
+          <Text style={styles.editorialText}>
+            {content.editorialText}
+          </Text>
+
+          <ImageBackground
+            source={{
+              uri: content.editorialImage,
+            }}
+            imageStyle={{ borderRadius: 28 }}
+            style={styles.imageCard}
+          >
+            <View style={styles.imageOverlay} />
+            <View style={styles.imageFooter}>
+              <Text style={[styles.verifiedIcon, { color: content.accent }]}>✓</Text>
+              <Text style={[styles.imageFooterText, { color: theme.textMuted }]}>
+                {role === "citizen" ? "Identity Protected System" : "Operational Authority Verified"}
+              </Text>
+            </View>
+          </ImageBackground>
+        </View>
+
+        <View style={styles.loginCard}>
+          <View style={styles.glowOrb} />
+          <View style={styles.loginCardInner}>
+            <View style={styles.loginIntro}>
+              <Text style={styles.loginTitle}>Welcome back</Text>
+              <Text style={styles.loginSubtitle}>
+                Please authenticate your credentials to enter the {content.loginLabel.toLowerCase()} dashboard.
+              </Text>
+            </View>
+
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>Username</Text>
+              <View style={styles.fieldWrap}>
+                <Text style={styles.fieldIcon}>▣</Text>
+                <TextInput
+                  value={username}
+                  onChangeText={setUsername}
+                  placeholder={role === "citizen" ? "e.g. juan.delacruz" : "Enter username"}
+                  placeholderTextColor="#8f978f"
+                  style={styles.fieldInput}
+                  autoCapitalize="none"
+                />
+              </View>
+            </View>
+
+            <View style={styles.fieldGroup}>
+              <View style={styles.labelRow}>
+                <Text style={styles.fieldLabel}>Password</Text>
+                <Pressable>
+                  <Text style={[styles.helpLink, { color: content.accent }]}>Forgot Password?</Text>
+                </Pressable>
+              </View>
+
+              <View style={styles.fieldWrap}>
+                <Text style={styles.fieldIcon}>◌</Text>
+                <TextInput
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="••••••••••••"
+                  placeholderTextColor="#8f978f"
+                  style={styles.fieldInput}
+                  secureTextEntry={!passwordVisible}
+                />
+                <Pressable onPress={() => setPasswordVisible((value) => !value)}>
+                  <Text style={styles.visibilityToggle}>
+                    {passwordVisible ? "Hide" : "Show"}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+
+            <View style={styles.actionStack}>
+              <Pressable onPress={onSubmit} style={[styles.primaryAction, { backgroundColor: content.accent }]}>
+                <View style={styles.primaryGradient}>
+                  <Text style={styles.primaryActionText}>{content.action}</Text>
+                  <Text style={styles.primaryActionArrow}>→</Text>
+                </View>
+              </Pressable>
+
+              <View style={styles.dividerRow}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>Need Another Portal?</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              <Pressable onPress={onBack} style={styles.secondaryAction}>
+                <Text style={styles.secondaryActionText}>Open Role Selector</Text>
+              </Pressable>
+
+              {onSecondary && secondaryLabel ? (
+                <Pressable onPress={onSecondary} style={{ marginTop: 8, alignItems: "center" }}>
+                  <Text style={{ color: content.accent, ...fonts.bold }}>{secondaryLabel}</Text>
+                </Pressable>
+              ) : null}
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+          <View style={styles.footerLinks}>
+            {["Privacy Policy", "Crisis Support", "Accessibility"].map(link => (
+              <Pressable key={link}>
+                <Text style={styles.footerLink}>{link}</Text>
+              </Pressable>
+            ))}
+          </View>
+          <Text style={styles.footerNote}>
+            © 2024 DAMAYAN Humanitarian Platform. Connecting responders and citizens during disaster response.
+          </Text>
+        </View>
+      </View>
     </Screen>
   );
 }

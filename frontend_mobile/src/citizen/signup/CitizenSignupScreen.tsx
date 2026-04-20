@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Text, View, Pressable } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { MobileHeader } from "../../components/MobileShell";
@@ -14,6 +14,22 @@ export function CitizenSignupScreen({
   onSubmit: () => void;
 }) {
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const uploadBoxRef = useRef<View>(null);
+
+  const validateAndSetFile = (file: { name: string; type?: string }) => {
+    const fileName = file.name.toLowerCase();
+    const isAllowedType = file.type === "image/jpeg" || file.type === "image/png";
+    const isAllowedExt = fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png");
+    
+    if (isAllowedType || isAllowedExt) {
+      setSelectedFileName(file.name);
+      return true;
+    } else {
+      alert("Invalid file type. Please upload a JPG or PNG image.");
+      return false;
+    }
+  };
 
   async function handlePickDocument() {
     try {
@@ -21,13 +37,54 @@ export function CitizenSignupScreen({
         type: ["image/jpeg", "image/png"],
       });
 
-      if (result.assets && result.assets.length > 0) {
-        setSelectedFileName(result.assets[0].name);
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        validateAndSetFile(result.assets[0]);
       }
     } catch (err) {
       console.error("Error picking document:", err);
     }
   }
+
+  // Improved for Web: Attach native event listeners to prevent browser defaults
+  useEffect(() => {
+    const el = uploadBoxRef.current as any;
+    if (!el || typeof window === "undefined") return;
+
+    const node = el.getScrollableNode ? el.getScrollableNode() : el;
+
+    const onDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+    };
+
+    const onDragLeave = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+    };
+
+    const onDrop = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      if (e.dataTransfer?.files) {
+        validateAndSetFile(e.dataTransfer.files[0]);
+      }
+    };
+
+    node.addEventListener("dragover", onDragOver);
+    node.addEventListener("dragenter", onDragOver);
+    node.addEventListener("dragleave", onDragLeave);
+    node.addEventListener("drop", onDrop);
+
+    return () => {
+      node.removeEventListener("dragover", onDragOver);
+      node.removeEventListener("dragenter", onDragOver);
+      node.removeEventListener("dragleave", onDragLeave);
+      node.removeEventListener("drop", onDrop);
+    };
+  }, []);
 
   return (
     <Screen>
@@ -63,34 +120,62 @@ export function CitizenSignupScreen({
               }}>
                 UPLOAD GOVERNMENT ID
               </Text>
-              <Pressable 
-                onPress={handlePickDocument} 
-                style={citizenStyles.uploadBox}
+              <View 
+                ref={uploadBoxRef}
+                style={[
+                  citizenStyles.uploadBox,
+                  { overflow: "hidden", borderStyle: "dashed" },
+                  isDragging && {
+                    borderColor: theme.primary,
+                    backgroundColor: theme.primaryLight,
+                    borderWidth: 2.5,
+                  }
+                ]}
               >
-                <Text style={{ fontSize: 36, opacity: 0.8 }}>📄</Text>
-                <View style={{ alignItems: "center", gap: 6, marginTop: 4 }}>
-                  <Text style={citizenStyles.uploadTitle}>
-                    {selectedFileName ? "FILE SELECTED" : "UPLOAD FILE OR DRAG HERE"}
-                  </Text>
-                  <Text style={citizenStyles.uploadHint}>
-                    {selectedFileName ? selectedFileName : "JPG OR PNG • MAX 5MB"}
-                  </Text>
-                  {selectedFileName && (
-                    <Text style={{
-                      marginTop: 4,
-                      paddingHorizontal: 12,
-                      paddingVertical: 6,
-                      backgroundColor: theme.primaryLight,
-                      borderRadius: 8,
-                      color: theme.primary,
-                      fontSize: 12,
-                      fontWeight: "700",
-                    }}>
-                      ✓ Verified
+                <Pressable 
+                  onPress={handlePickDocument} 
+                  style={{ 
+                    flex: 1, 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    padding: 20,
+                    gap: 8,
+                    width: "100%"
+                  }}
+                >
+                  <Text style={{ fontSize: 36, opacity: 0.8 }}>📄</Text>
+                  <View style={{ alignItems: "center", gap: 6, marginTop: 4 }}>
+                    <Text style={[citizenStyles.uploadTitle, { fontSize: 16, letterSpacing: 0.5 }]}>
+                      {selectedFileName ? "FILE SELECTED" : isDragging ? "DROP FILE HERE" : "UPLOAD FILE OR DRAG HERE"}
                     </Text>
-                  )}
-                </View>
-              </Pressable>
+                    
+                    {!selectedFileName ? (
+                      <Text style={citizenStyles.uploadHint}>
+                        JPG OR PNG • MAX 5MB
+                      </Text>
+                    ) : (
+                      <View style={{ alignItems: "center", gap: 8 }}>
+                        <Text style={{ color: theme.textLight, fontSize: 13, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8 }}>
+                          {selectedFileName}
+                        </Text>
+                        <View style={{
+                          paddingHorizontal: 14,
+                          paddingVertical: 6,
+                          backgroundColor: "#ecfdf5",
+                          borderRadius: 12,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 6,
+                          borderWidth: 1,
+                          borderColor: "#d1fae5",
+                        }}>
+                          <Text style={{ color: "#059669", fontSize: 13, fontWeight: "800" }}>✓ Verified</Text>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                </Pressable>
+              </View>
             </View>
           </View>
           

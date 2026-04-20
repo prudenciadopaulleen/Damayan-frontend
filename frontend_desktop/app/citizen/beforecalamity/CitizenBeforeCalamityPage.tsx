@@ -25,10 +25,10 @@ const checklist = [
 ];
 
 const sidebarLinks = [
-  { label: "Home", href: "/citizen/beforecalamity", key: "home", icon: "H" },
-  { label: "Checklists", href: "/citizen/beforecalamity#checklists", key: "checklists", icon: "C" },
-  { label: "Reporting", href: "/citizen/duringcalamity", key: "reporting", icon: "R" },
-  { label: "Support", href: "/citizen/duringcalamity#broadcast", key: "support", icon: "S" },
+  { label: "Home", href: "#home", key: "home", icon: "H" },
+  { label: "Checklists", href: "#checklists", key: "checklists", icon: "C" },
+  { label: "Household", href: "#household", key: "household", icon: "R" },
+  { label: "Support", href: "#sector-map", key: "support", icon: "S" },
 ];
 
 export default function CitizenBeforeCalamityPage() {
@@ -37,23 +37,83 @@ export default function CitizenBeforeCalamityPage() {
   const [activeAlert, setActiveAlert] = useState<string | null>(
     "FLASH FLOOD WARNING: Sector 4 expects 20cm surge within 120mins. Acknowledge to receive evacuation route."
   );
+  
+  // New Registration Flow State
   const [registrationType, setRegistrationType] = useState<"Individual" | "Household" | null>(null);
-  const [householdMembers, setHouseholdMembers] = useState([{ name: "", age: "" }]);
+  const [registrationStep, setRegistrationStep] = useState(1);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
+  const [userProfile, setUserProfile] = useState({
+    fullName: "",
+    dob: "",
+    gender: "",
+    bloodType: "O+",
+    conditions: "",
+    consent: false
+  });
+
+  const [householdMembers, setHouseholdMembers] = useState<any[]>([
+    { name: "", age: "", relationship: "", accessibilityNeeds: [] }
+  ]);
+
+  const [animals, setAnimals] = useState<any[]>([
+    { name: "", species: "", needsCage: false }
+  ]);
+
   const handleAddMember = () => {
-    setHouseholdMembers([...householdMembers, { name: "", age: "" }]);
+    setHouseholdMembers([...householdMembers, { name: "", age: "", relationship: "", accessibilityNeeds: [] }]);
   };
 
-  const handleMemberChange = (index: number, field: "name" | "age", value: string) => {
+  const handleRemoveMember = (index: number) => {
+    if (householdMembers.length > 1) {
+      setHouseholdMembers(householdMembers.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleMemberChange = (index: number, field: string, value: any) => {
     const newMembers = [...householdMembers];
-    newMembers[index][field] = value;
+    if (field === "age") {
+      const val = parseInt(value);
+      newMembers[index][field] = isNaN(val) ? "" : Math.max(0, val).toString();
+    } else {
+      newMembers[index][field] = value;
+    }
     setHouseholdMembers(newMembers);
+  };
+
+  const handleAddAnimal = () => {
+    setAnimals([...animals, { name: "", species: "", needsCage: false }]);
+  };
+
+  const handleRemoveAnimal = (index: number) => {
+    if (animals.length > 1) {
+      setAnimals(animals.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleAnimalChange = (index: number, field: string, value: any) => {
+    const newAnimals = [...animals];
+    newAnimals[index][field] = value;
+    setAnimals(newAnimals);
+  };
+
+  const toggleAccessibilityNeed = (memberIndex: number, needId: string) => {
+    const member = householdMembers[memberIndex];
+    const currentNeeds = member.accessibilityNeeds || [];
+    const newNeeds = currentNeeds.includes(needId)
+      ? currentNeeds.filter((id: string) => id !== needId)
+      : [...currentNeeds, needId];
+    handleMemberChange(memberIndex, "accessibilityNeeds", newNeeds);
   };
 
   const handleHouseholdSubmit = () => {
     setRegistrationSuccess(true);
-    // In a real app, this is where you'd send to backend
+  };
+
+  const getMaxDob = (minAge: number = 0) => {
+    const today = new Date();
+    const targetDate = new Date(today.getFullYear() - minAge, today.getMonth(), today.getDate());
+    return targetDate.toISOString().split("T")[0];
   };
 
   useEffect(() => {
@@ -150,188 +210,411 @@ export default function CitizenBeforeCalamityPage() {
         </header>
 
         <main className="citizen-web-main" id="home">
-          {/* Flowchart Step: Registration of Users with QR */}
+          {/* Registration Type Selection */}
           {!registrationType && (
-            <section style={{ 
-              marginBottom: "3rem", 
-              padding: "4rem", 
-              backgroundColor: "#fff", 
-              borderRadius: "2.5rem", 
-              border: "1px solid rgba(13, 99, 27, 0.08)", 
-              boxShadow: "0 25px 50px rgba(0,0,0,0.04)",
-              fontFamily: "'Poppins', sans-serif" 
-            }}>
-              <div style={{ marginBottom: "2.5rem" }}>
-                <h3 style={{ fontSize: "2.2rem", fontWeight: "900", margin: 0, letterSpacing: "-0.04em" }}>Registration of Users with QR</h3>
-                <p style={{ color: "#586054", marginTop: "0.6rem", fontSize: "1.1rem", fontWeight: "500" }}>Select your digital identity type to proceed with emergency preparedness.</p>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem" }}>
-                <button 
-                  onClick={() => setRegistrationType("Individual")} 
-                  style={{ 
-                    textAlign: "left", 
-                    padding: "3.5rem 3rem", 
-                    borderRadius: "2rem", 
-                    border: "2px solid #0d631b", 
-                    backgroundColor: "#fff", 
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    fontFamily: "inherit",
-                    boxShadow: "0 10px 25px rgba(13, 99, 27, 0.04)"
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.transform = "translateY(-5px)";
-                    e.currentTarget.style.boxShadow = "0 20px 40px rgba(13, 99, 27, 0.08)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 10px 25px rgba(13, 99, 27, 0.04)";
-                  }}
-                >
-                  <h4 style={{ fontSize: "1.5rem", fontWeight: "900", margin: 0 }}>Register Myself</h4>
-                  <p style={{ fontSize: "1rem", color: "#586054", marginTop: "1rem", lineHeight: "1.6" }}>Generate an individual QR ID for personal tracking and rapid shelter check-in.</p>
-                </button>
-                <button 
-                  onClick={() => setRegistrationType("Household")} 
-                  style={{ 
-                    textAlign: "left", 
-                    padding: "3.5rem 3rem", 
-                    borderRadius: "2rem", 
-                    border: "2px solid #0d631b", 
-                    backgroundColor: "#fff", 
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    fontFamily: "inherit",
-                    boxShadow: "0 10px 25px rgba(13, 99, 27, 0.04)"
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.transform = "translateY(-5px)";
-                    e.currentTarget.style.boxShadow = "0 20px 40px rgba(13, 99, 27, 0.08)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 10px 25px rgba(13, 99, 27, 0.04)";
-                  }}
-                >
-                  <h4 style={{ fontSize: "1.5rem", fontWeight: "900", margin: 0 }}>Register My Family</h4>
-                  <p style={{ fontSize: "1rem", color: "#586054", marginTop: "1rem", lineHeight: "1.6" }}>Input self and family members to receive a unified household QR code and cluster aid.</p>
-                </button>
+            <section style={{ marginBottom: "4rem" }}>
+              <div className="registration-main">
+                <header className="step-header">
+                  <span className="step-indicator">Identity Setup</span>
+                  <h3 style={{ fontSize: "2.8rem", fontWeight: "900", margin: 0, letterSpacing: "-0.04em" }}>
+                    Public Portal Registration
+                  </h3>
+                  <p style={{ color: "#586054", fontSize: "1.15rem", marginTop: "1rem", lineHeight: "1.6", maxWidth: "45rem" }}>
+                    Secure your digital emergency identity. Select the registration portal that best matches your current residency status.
+                  </p>
+                </header>
+
+                <div className="field-grid">
+                  <button 
+                    onClick={() => setRegistrationType("Individual")} 
+                    className="registration-card"
+                    style={{ 
+                      textAlign: "left", 
+                      cursor: "pointer", 
+                      padding: "3.5rem",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      fontFamily: "'Poppins', sans-serif"
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = "translateY(-8px)";
+                      e.currentTarget.style.borderColor = "#0d631b";
+                      e.currentTarget.style.boxShadow = "0 30px 60px rgba(13, 99, 27, 0.1)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.borderColor = "rgba(13, 99, 27, 0.08)";
+                      e.currentTarget.style.boxShadow = "0 25px 60px rgba(0,0,0,0.04)";
+                    }}
+                  >
+                    <h4 style={{ fontSize: "1.8rem", fontWeight: "900", margin: "0 0 1rem", color: "#1a1c19" }}>Register Myself</h4>
+                    <p style={{ color: "#586054", fontSize: "1.1rem", lineHeight: "1.7", fontWeight: "500" }}>
+                      Generate an individual QR ID for personal tracking, medical status reporting, and rapid shelter check-in.
+                    </p>
+                  </button>
+
+                  <button 
+                    onClick={() => setRegistrationType("Household")} 
+                    className="registration-card"
+                    style={{ 
+                      textAlign: "left", 
+                      cursor: "pointer", 
+                      padding: "3.5rem",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      fontFamily: "'Poppins', sans-serif"
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = "translateY(-8px)";
+                      e.currentTarget.style.borderColor = "#0d631b";
+                      e.currentTarget.style.boxShadow = "0 30px 60px rgba(13, 99, 27, 0.1)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.borderColor = "rgba(13, 99, 27, 0.08)";
+                      e.currentTarget.style.boxShadow = "0 25px 60px rgba(0,0,0,0.04)";
+                    }}
+                  >
+                    <h4 style={{ fontSize: "1.8rem", fontWeight: "900", margin: "0 0 1rem", color: "#1a1c19" }}>Register My Family</h4>
+                    <p style={{ color: "#586054", fontSize: "1.1rem", lineHeight: "1.7", fontWeight: "500" }}>
+                      Input family details to receive a unified household QR code, humanitarian aid clustering, and collective alerts.
+                    </p>
+                  </button>
+                </div>
               </div>
             </section>
           )}
 
-          {registrationType === "Individual" && (
-            <section style={{ marginBottom: "3rem", padding: "3rem", backgroundColor: "#eef4ed", borderRadius: "2rem", textAlign: "center" }}>
-               <h3 style={{ fontWeight: "900" }}>Your Individual QR ID is Ready</h3>
-               <div style={{ margin: "2rem auto", padding: "20px", background: "#fff", display: "inline-block", borderRadius: "20px" }}>
-                  <div style={{ width: "150px", height: "150px", backgroundColor: "#000" }} />
-                  <p style={{ fontWeight: "800", marginTop: "10px" }}>IND-992-01</p>
-               </div>
-               <br />
-               <button onClick={() => setRegistrationType(null)} style={{ background: "transparent", border: "none", color: "#0d631b", fontWeight: "800", cursor: "pointer" }}>Change Type</button>
-            </section>
-          )}
+          {/* Upgraded Multi-Step Registration Flow */}
+          {(registrationType === "Individual" || registrationType === "Household") && !registrationSuccess && (
+            <div className="registration-container" style={{ marginBottom: "4rem" }}>
+              <div className="registration-main">
+                
+                {/* Step Header */}
+                <header className="step-header">
+                  <span className="step-indicator">
+                    {registrationType === "Individual" 
+                      ? "Step 01 of 01 / Personal Identity" 
+                      : `Step 0${registrationStep} of 02 / ${registrationStep === 1 ? "Profile" : "Household"}`}
+                  </span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                    <h3 style={{ fontSize: "2.8rem", fontWeight: "900", margin: 0, letterSpacing: "-0.04em" }}>
+                      {registrationStep === 1 ? "Personal Identity Profile" : "Register My Family"}
+                    </h3>
+                    <button 
+                      onClick={() => registrationStep === 1 ? setRegistrationType(null) : setRegistrationStep(1)} 
+                      style={{ background: "transparent", border: "none", color: "#586054", fontWeight: "800", cursor: "pointer", fontSize: "1rem" }}
+                    >
+                      ← Back
+                    </button>
+                  </div>
+                  <p style={{ color: "#586054", fontSize: "1.15rem", marginTop: "1rem", lineHeight: "1.6", maxWidth: "45rem" }}>
+                    {registrationStep === 1 
+                      ? "Your health and identity are vital for coordinating relief. Please provide accurate details to ensure medical responders have the context they need."
+                      : "Provide details for each person currently residing with you. This ensures appropriate aid distribution and medical prioritization."}
+                  </p>
+                </header>
 
-          {registrationType === "Household" && !registrationSuccess && (
-            <section style={{ 
-              marginBottom: "3rem", 
-              padding: "4rem", 
-              backgroundColor: "#fefcf6", 
-              borderRadius: "2.5rem", 
-              border: "1px solid rgba(126, 87, 0, 0.1)",
-              fontFamily: "'Poppins', sans-serif"
-            }}>
-               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1rem" }}>
-                 <h3 style={{ fontSize: "2rem", fontWeight: "900", margin: 0 }}>Household Member Registration</h3>
-                 <button onClick={() => setRegistrationType(null)} style={{ background: "transparent", border: "none", color: "#7e5700", fontWeight: "800", cursor: "pointer", fontSize: "1rem" }}>Back</button>
-               </div>
-               <p style={{ color: "#586054", fontSize: "1.1rem", marginBottom: "2.5rem" }}>Add all residents in your household to ensure group survival allocations.</p>
-               
-               <div style={{ display: "grid", gap: "1.25rem" }}>
-                  {householdMembers.map((member, index) => (
-                    <div key={index} style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1.5rem", animation: "fadeIn 0.3s ease" }}>
-                      <input 
-                        type="text" 
-                        placeholder="Full Name" 
-                        value={member.name}
-                        onChange={(e) => handleMemberChange(index, "name", e.target.value)}
-                        style={{ padding: "1.25rem 1.5rem", borderRadius: "1.25rem", border: "1px solid #eef1ed", fontSize: "1rem", outline: "none", transition: "all 0.2s" }} 
-                      />
-                      <input 
-                        type="number" 
-                        placeholder="Age" 
-                        value={member.age}
-                        onChange={(e) => handleMemberChange(index, "age", e.target.value)}
-                        style={{ padding: "1.25rem 1.5rem", borderRadius: "1.25rem", border: "1px solid #eef1ed", fontSize: "1rem", outline: "none" }} 
-                      />
+                {/* STEP 1: PERSONAL IDENTITY (MEDICAL) - SHARED */}
+                {registrationStep === 1 && (
+                  <div className="registration-card">
+                    <div className="field-grid" style={{ marginBottom: "2.5rem" }}>
+                      <div style={{ gridColumn: "span 2" }}>
+                        <label className="field-label">Full Legal Name</label>
+                        <input 
+                          type="text" 
+                          className="text-input" 
+                          placeholder="As shown on official ID" 
+                          value={userProfile.fullName}
+                          onChange={(e) => setUserProfile({...userProfile, fullName: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="field-label">Date of Birth</label>
+                        <input 
+                          type="date" 
+                          className="text-input" 
+                          max={getMaxDob(18)}
+                          value={userProfile.dob}
+                          onChange={(e) => setUserProfile({...userProfile, dob: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="field-label">Gender Identity</label>
+                        <div className="chip-group">
+                          {["Female", "Male", "Other"].map(g => (
+                            <button 
+                              key={g} 
+                              className={`chip-btn ${userProfile.gender === g ? "is-active" : ""}`}
+                              onClick={() => setUserProfile({...userProfile, gender: g})}
+                            >
+                              {g}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  ))}
-                  
-                  <button 
-                    onClick={handleAddMember}
-                    style={{ 
-                      padding: "1.25rem", 
-                      borderRadius: "1.25rem", 
-                      border: "2px dashed rgba(112, 122, 108, 0.3)", 
-                      color: "#586054", 
-                      background: "transparent", 
-                      fontWeight: "700", 
-                      cursor: "pointer",
-                      fontSize: "1rem",
-                      transition: "all 0.2s"
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.borderColor = "#0d631b"}
-                    onMouseOut={(e) => e.currentTarget.style.borderColor = "rgba(112, 122, 108, 0.3)"}
-                  >
-                    + Add Another Member
-                  </button>
 
-                  <button 
-                    onClick={handleHouseholdSubmit} 
-                    style={{ 
-                      padding: "1.5rem", 
-                      borderRadius: "1.25rem", 
-                      background: "#0d631b", 
-                      color: "#fff", 
-                      fontWeight: "900", 
-                      border: "none", 
-                      fontSize: "1.1rem",
-                      cursor: "pointer",
-                      marginTop: "1rem",
-                      boxShadow: "0 10px 20px rgba(13, 99, 27, 0.2)"
-                    }}
-                  >
-                    Submit Household Details
-                  </button>
-               </div>
-            </section>
+                    <div style={{ borderTop: "1px solid #eef1ed", paddingTop: "2.5rem", marginBottom: "2.5rem" }}>
+                      <div className="field-grid">
+                        <div>
+                          <label className="field-label">Critical Blood Type</label>
+                          <div className="blood-grid">
+                            {["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].map(type => (
+                              <button 
+                                key={type} 
+                                className={`blood-btn ${userProfile.bloodType === type ? "is-active" : ""}`}
+                                onClick={() => setUserProfile({...userProfile, bloodType: type})}
+                              >
+                                {type}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="field-label">Conditions & Allergies</label>
+                          <textarea 
+                            className="text-area" 
+                            rows={4} 
+                            placeholder="List chronic conditions (e.g. Asthma) or severe allergies..."
+                            value={userProfile.conditions}
+                            onChange={(e) => setUserProfile({...userProfile, conditions: e.target.value})}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginBottom: "3rem" }}>
+                      <input 
+                        type="checkbox" 
+                        id="consent" 
+                        checked={userProfile.consent}
+                        onChange={(e) => setUserProfile({...userProfile, consent: e.target.checked})}
+                        style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                      />
+                      <label htmlFor="consent" style={{ color: "#586054", fontSize: "0.95rem", cursor: "pointer" }}>
+                        I certify that the information provided is accurate and consent to humanitarian data usage.
+                      </label>
+                    </div>
+
+                    <button 
+                      className="citizen-web-primary-action" 
+                      style={{ width: "100%", justifyContent: "center", opacity: userProfile.consent ? 1 : 0.5 }}
+                      disabled={!userProfile.consent}
+                      onClick={() => {
+                        if (registrationType === "Individual") {
+                          handleHouseholdSubmit();
+                        } else {
+                          setRegistrationStep(2);
+                        }
+                      }}
+                    >
+                      {registrationType === "Individual" ? "Complete Registration" : "Continue to Family Registration"}
+                    </button>
+                  </div>
+                )}
+
+                {/* STEP 2: HOUSEHOLD MEMBERS */}
+                {registrationStep === 2 && (
+                  <div className="registration-main">
+                    {householdMembers.map((member, index) => (
+                      <div key={index} className="member-card-v2">
+                        <div className="member-card-head">
+                          <div className="member-card-id">
+                            <div className="member-id-circle">{index + 1}</div>
+                            <h4 style={{ margin: 0, fontSize: "1.2rem", fontWeight: "800" }}>Family Member</h4>
+                          </div>
+                          {index > 0 && (
+                            <button className="member-remove-btn" onClick={() => handleRemoveMember(index)}>Remove Member</button>
+                          )}
+                        </div>
+
+                        <div className="field-grid" style={{ marginBottom: "2rem" }}>
+                          <div style={{ gridColumn: "span 2" }}>
+                            <label className="field-label">Full Legal Name</label>
+                            <input 
+                              type="text" 
+                              className="text-input" 
+                              placeholder="e.g. Maria Aristha" 
+                              value={member.name}
+                              onChange={(e) => handleMemberChange(index, "name", e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <label className="field-label">Age</label>
+                            <input 
+                              type="number" 
+                              className="text-input" 
+                              placeholder="Years" 
+                              min="0"
+                              value={member.age}
+                              onChange={(e) => handleMemberChange(index, "age", e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <label className="field-label">Relationship to Head</label>
+                            <div className="chip-group">
+                              {["Spouse", "Child", "Parent", "Sibling", "Other"].map(r => (
+                                <button 
+                                  key={r} 
+                                  className={`chip-btn ${member.relationship === r ? "is-active" : ""}`}
+                                  onClick={() => handleMemberChange(index, "relationship", r)}
+                                >
+                                  {r}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="field-label">Quick Select Accessibility Needs</label>
+                          <div className="chip-group">
+                            {[
+                              {id: "wheelchair", label: "Wheelchair"},
+                              {id: "medication", label: "Medication"},
+                              {id: "infant", label: "Infant Care"},
+                              {id: "elderly", label: "Elderly"}
+                            ].map(need => (
+                              <button 
+                                key={need.id} 
+                                className={`chip-btn ${(member.accessibilityNeeds || []).includes(need.id) ? "is-active" : ""}`}
+                                onClick={() => toggleAccessibilityNeed(index, need.id)}
+                              >
+                                {need.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Animal Registration Section */}
+                    <div style={{ borderTop: "1px solid #eef1ed", paddingTop: "3rem", marginTop: "1rem", marginBottom: "2rem" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+                        <h4 style={{ fontSize: "1.4rem", fontWeight: "900", margin: 0 }}>Animals & Pets</h4>
+                        <button 
+                          onClick={handleAddAnimal}
+                          style={{ background: "transparent", border: "none", color: "#0d631b", fontWeight: "800", cursor: "pointer", fontSize: "0.9rem" }}
+                        >
+                          + Add Another Animal
+                        </button>
+                      </div>
+                      
+                      {animals.map((animal, index) => (
+                        <div key={index} className="member-card-v2" style={{ borderLeft: "6px solid #ffba38" }}>
+                           <div className="member-card-head">
+                             <div className="member-card-id">
+                               <div className="member-id-circle" style={{ backgroundColor: "#7e5700", color: "#fff" }}>🐾</div>
+                               <h4 style={{ margin: 0, fontSize: "1.2rem", fontWeight: "800" }}>Household Animal</h4>
+                             </div>
+                             {animals.length > 1 && (
+                               <button className="member-remove-btn" onClick={() => handleRemoveAnimal(index)}>Remove Animal</button>
+                             )}
+                           </div>
+
+                           <div className="field-grid">
+                             <div style={{ gridColumn: "span 2" }}>
+                               <label className="field-label">Animal Name (Optional)</label>
+                               <input 
+                                 type="text" 
+                                 className="text-input" 
+                                 placeholder="e.g. Luna" 
+                                 value={animal.name}
+                                 onChange={(e) => handleAnimalChange(index, "name", e.target.value)}
+                               />
+                             </div>
+                             <div>
+                               <label className="field-label">Species / Type</label>
+                               <div className="chip-group">
+                                 {["Dog", "Cat", "Bird", "Livestock", "Other"].map(s => (
+                                   <button 
+                                     key={s} 
+                                     className={`chip-btn ${animal.species === s ? "is-active" : ""}`}
+                                     style={{ fontSize: "0.8rem" }}
+                                     onClick={() => handleAnimalChange(index, "species", s)}
+                                   >
+                                     {s}
+                                   </button>
+                                 ))}
+                               </div>
+                             </div>
+                             <div>
+                               <label className="field-label">Transport Logistics</label>
+                               <div 
+                                 className={`chip-btn ${animal.needsCage ? "is-active" : ""}`}
+                                 onClick={() => handleAnimalChange(index, "needsCage", !animal.needsCage)}
+                                 style={{ width: "fit-content", cursor: "pointer" }}
+                               >
+                                 {animal.needsCage ? "📦 Container Provided" : "⚠️ Assistance Required"}
+                               </div>
+                             </div>
+                           </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="action-row-v2">
+                      <button 
+                        onClick={handleAddMember}
+                        style={{ border: "2px dashed #bfcaba", background: "transparent", padding: "1.2rem 2.5rem", borderRadius: "1.5rem", color: "#586054", fontWeight: "800", cursor: "pointer" }}
+                      >
+                        + Add Another Family Member
+                      </button>
+                      <button 
+                        className="citizen-web-primary-action" 
+                        style={{ minWidth: "15rem", justifyContent: "center" }}
+                        onClick={handleHouseholdSubmit}
+                      >
+                        Complete Registration
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Informational Sidebars */}
+              <aside className="info-sidebar">
+                <div className="sidebar-box is-accent">
+                  <h4>🛡️ Privacy Protocol</h4>
+                  <p>Your health and family data is encrypted and only shared with verified humanitarian response organizations during a declared emergency state.</p>
+                </div>
+                <div className="sidebar-box">
+                  <h4>💡 Why this matters</h4>
+                  <p>Accurate household data helps responders calculate food ratios, specialized transport, and medical supply distribution for your exact sector.</p>
+                </div>
+                <div className="sidebar-box">
+                  <h4>📦 Aid Clustering</h4>
+                  <p>Registering as a family allows you to receive unified relief packages and stay together if evacuation is triggered.</p>
+                </div>
+              </aside>
+            </div>
           )}
 
           {registrationSuccess && (
             <section style={{ 
               marginBottom: "3rem", 
-              padding: "4rem", 
+              padding: "5rem", 
               backgroundColor: "#eef4ed", 
-              borderRadius: "2.5rem", 
-              textAlign: "center",
-              fontFamily: "'Poppins', sans-serif"
+              borderRadius: "3rem", 
+              textAlign: "center"
             }}>
-               <div style={{ backgroundColor: "#0d631b", width: "64px", height: "64px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "24px", margin: "0 auto 24px" }}>✓</div>
-               <h3 style={{ fontSize: "2rem", fontWeight: "900", margin: "0 0 1rem" }}>Your Household QR ID is Ready</h3>
-               <div style={{ margin: "2rem auto", padding: "2rem", background: "#fff", display: "inline-block", borderRadius: "2rem", boxShadow: "0 20px 40px rgba(0,0,0,0.05)" }}>
-                  <div style={{ width: "160px", height: "160px", backgroundColor: "#000", position: "relative" }}>
-                     <div style={{ position: "absolute", top: "10px", left: "10px", right: "10px", bottom: "10px", border: "8px solid #fff", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(3, 1fr)", gap: "5px" }}>
+               <div style={{ backgroundColor: "#0d631b", width: "80px", height: "80px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "32px", margin: "0 auto 32px" }}>✓</div>
+               <h3 style={{ fontSize: "2.5rem", fontWeight: "900", margin: "0 0 1rem" }}>Registration Complete</h3>
+               <p style={{ color: "#586054", fontSize: "1.2rem", marginBottom: "3rem" }}>Your Household Identity has been verified and synced with local response stations.</p>
+               
+               <div style={{ margin: "2rem auto", padding: "3rem", background: "#fff", display: "inline-block", borderRadius: "2.5rem", boxShadow: "0 30px 60px rgba(0,0,0,0.06)" }}>
+                  <div style={{ width: "200px", height: "200px", backgroundColor: "#000", position: "relative" }}>
+                     <div style={{ position: "absolute", top: "15px", left: "15px", right: "15px", bottom: "15px", border: "10px solid #fff", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(3, 1fr)", gap: "8px" }}>
                         {[...Array(9)].map((_, i) => <div key={i} style={{ backgroundColor: i % 2 === 0 ? "#fff" : "transparent" }} />)}
                      </div>
                   </div>
-                  <p style={{ fontWeight: "900", marginTop: "1.5rem", fontSize: "1.1rem", letterSpacing: "2px" }}>FAM-CLUSTER-04</p>
+                  <p style={{ fontWeight: "900", marginTop: "2rem", fontSize: "1.4rem", letterSpacing: "4px" }}>CLUSTER-DAM-092</p>
                </div>
                <br />
                <button 
-                 onClick={() => { setRegistrationSuccess(false); setRegistrationType(null); }} 
-                 style={{ background: "transparent", border: "none", color: "#0d631b", fontWeight: "800", cursor: "pointer", marginTop: "1rem" }}
+                 onClick={() => { setRegistrationSuccess(false); setRegistrationType(null); setRegistrationStep(1); }} 
+                 style={{ background: "transparent", border: "none", color: "#0d631b", fontWeight: "8600", cursor: "pointer", marginTop: "2rem", fontSize: "1.1rem" }}
                >
-                 Register Another Cluster
+                 Change Registration or Add Group
                </button>
             </section>
           )}
@@ -369,13 +652,56 @@ export default function CitizenBeforeCalamityPage() {
                 <div className="citizen-web-household-grid">
                   <article className="citizen-web-household-card">
                     <div className="citizen-web-household-icon">GH</div>
-                    <Link href="#household">Edit</Link>
-                    <div><strong>4 Members</strong><p>Profile: Active</p></div>
+                    <div className="citizen-web-household-actions">
+                      <button 
+                        className="citizen-web-household-card-btn"
+                        onClick={() => {
+                          setRegistrationType("Household");
+                          setRegistrationSuccess(false);
+                          setRegistrationStep(1);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                      >
+                        Edit
+                      </button>
+                      {!registrationSuccess && (
+                        <button 
+                          className="citizen-web-household-card-btn is-secondary"
+                          onClick={() => {
+                            setRegistrationType("Household");
+                            setRegistrationSuccess(false);
+                            setRegistrationStep(2);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                        >
+                          Add
+                        </button>
+                      )}
+                    </div>
+                    <div>
+                      <strong>{registrationSuccess ? householdMembers.length : 4} Members</strong>
+                      <p>Profile: {registrationSuccess ? "Verified" : "Active"}</p>
+                    </div>
                   </article>
                   <article className="citizen-web-household-card">
                     <div className="citizen-web-household-icon is-secondary">PT</div>
-                    <Link href="#household">Add</Link>
-                    <div><strong>2 Animals</strong><p>Care-plan Required</p></div>
+                    <div className="citizen-web-household-actions">
+                      <button 
+                        className="citizen-web-household-card-btn"
+                        onClick={() => {
+                          setRegistrationType("Household");
+                          setRegistrationSuccess(false);
+                          setRegistrationStep(2);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                      >
+                        {registrationSuccess ? "Edit" : "Add"}
+                      </button>
+                    </div>
+                    <div>
+                      <strong>{registrationSuccess ? animals.length : 2} Animals</strong>
+                      <p>{registrationSuccess ? "Care Plan Synced" : "Care-plan Required"}</p>
+                    </div>
                   </article>
                 </div>
               </section>
@@ -408,7 +734,9 @@ export default function CitizenBeforeCalamityPage() {
           </section>
 
           <footer className="citizen-web-footer-actions">
-            <Link className="is-primary" href="/citizen/duringcalamity">Open Response</Link>
+            <Link className="is-primary" href="/citizen/duringcalamity" style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              Open Emergency Portal
+            </Link>
           </footer>
         </main>
       </div>

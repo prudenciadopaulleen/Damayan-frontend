@@ -460,28 +460,80 @@
 .citizen-web-household-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 1.5rem;
   margin-top: 2rem;
 }
 
 .citizen-web-household-card {
-  padding: 1.5rem;
-  border-radius: 1.5rem;
+  position: relative;
+  padding: 2.5rem 2rem 2rem;
+  border-radius: 2.2rem;
   display: grid;
-  gap: 1rem;
-  background: #e8e8e4;
+  gap: 1.5rem;
+  background: #f4f6f4;
+  border: 1px solid rgba(13, 99, 27, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.citizen-web-household-card:hover {
+  background: #fff;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.05);
+  border-color: rgba(13, 99, 27, 0.12);
+  transform: translateY(-4px);
+}
+
+.citizen-web-household-actions {
+  position: absolute;
+  top: 1.8rem;
+  right: 1.8rem;
+  display: flex;
+  gap: 0.6rem;
+  z-index: 2;
+}
+
+.citizen-web-household-card-btn {
+  background: transparent;
+  border: 1.8px solid #1a1c19;
+  border-radius: 0.8rem;
+  font-family: inherit;
+  font-weight: 900;
+  color: #1a1c19;
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 0.5rem 1.1rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.citizen-web-household-card-btn:hover {
+  background: #1a1c19;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.citizen-web-household-card-btn.is-secondary {
+  border-color: #0d631b;
+  color: #0d631b;
+}
+
+.citizen-web-household-card-btn.is-secondary:hover {
+  background: #0d631b;
 }
 
 .citizen-web-household-card strong {
   display: block;
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 900;
+  color: #1a1c19;
 }
 
 .citizen-web-household-card p {
-  margin-top: 0.3rem;
-  font-size: 0.75rem;
-  font-weight: 700;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #586054;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -818,3 +870,239 @@
   background: #fff;
   box-shadow: 0 12px 24px rgba(26, 28, 25, 0.06);
 }
+
+/* =============================================
+   REGISTRATION MODULE UPGRADES
+   ============================================= */
+
+.registration-container {
+  display: grid;
+  grid-template-columns: 1fr 0.35fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.registration-main {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.step-header {
+  margin-bottom: 2rem;
+}
+
+.step-indicator {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(13, 99, 27, 0.08);
+  color: #0d631b;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.registration-card {
+  background: #fff;
+  border-radius: 2.5rem;
+  border: 1px solid rgba(13, 99, 27, 0.08);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.04);
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.registration-card-title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+
+.registration-card-subtitle {
+  color: #586054;
+  font-size: 1.05rem;
+  margin-bottom: 2.5rem;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #586054;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.8rem;
+}
+
+.text-input, .text-area {
+  width: 100%;
+  padding: 1.1rem 1.4rem;
+  border-radius: 1.2rem;
+  border: 1px solid #eef1ed;
+  background: #fcfdfc;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.text-input:focus, .text-area:focus {
+  border-color: #0d631b;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(13, 99, 27, 0.06);
+}
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.chip-btn {
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.9rem;
+  border: 1px solid #eef1ed;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #444742;
+  transition: all 0.2s;
+}
+
+.chip-btn:hover {
+  background: #f4f6f4;
+  border-color: #bfcaba;
+}
+
+.chip-btn.is-active {
+  background: #0d631b;
+  color: #fff;
+  border-color: #0d631b;
+}
+
+.blood-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.blood-btn {
+  height: 3.5rem;
+  border-radius: 1rem;
+  border: 1px solid #eef1ed;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #444742;
+  transition: all 0.2s;
+}
+
+.blood-btn.is-active {
+  background: #ba1a1a;
+  color: #fff;
+  border-color: #ba1a1a;
+}
+
+.info-sidebar {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.sidebar-box {
+  padding: 2rem;
+  border-radius: 2rem;
+  background: #fff;
+  border: 1px solid rgba(13, 99, 27, 0.06);
+}
+
+.sidebar-box.is-accent {
+  background: #f7f9f6;
+  border-color: rgba(13, 99, 27, 0.1);
+}
+
+.sidebar-box h4 {
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin: 0 0 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.sidebar-box p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #586054;
+  line-height: 1.6;
+}
+
+.member-card-v2 {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 2.2rem;
+  border: 1px solid rgba(112, 122, 108, 0.1);
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.4s ease;
+}
+
+.member-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.member-card-id {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.member-id-circle {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: #0d631b;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+}
+
+.member-remove-btn {
+  background: transparent;
+  border: none;
+  color: #ba1a1a;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.member-remove-btn:hover {
+  opacity: 1;
+}
+
+.action-row-v2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+

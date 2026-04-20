@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Animated, Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
+import { Animated, Text, View, StyleSheet, ScrollView, Pressable, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { MobileHeader, NavPills } from "../../components/MobileShell";
 import { Button, Input, Pill, Screen, SectionCard } from "../../components/UI";
@@ -14,7 +14,19 @@ export function SiteManagerDuringScreen({
 }) {
   const [active, setActive] = useState("Dashboard");
   const [checkInMode, setCheckInMode] = useState<"scan" | "manual">("scan");
-  const [severity, setSeverity] = useState<"critical" | "high" | "moderate">("high");
+  const [severity, setSeverity] = useState<"low" | "medium" | "high">("high");
+  const [incidentType, setIncidentType] = useState("Medical Emergency");
+  const [showTypePicker, setShowTypePicker] = useState(false);
+  const [description, setDescription] = useState("");
+
+  const incidentTypes = [
+    "Medical Emergency",
+    "Fire Incident",
+    "Structural Damage",
+    "Supply Shortage",
+    "Security Concern",
+    "Other",
+  ];
   
   // Operations State
   const [capacity, setCapacity] = useState(500);
@@ -250,21 +262,85 @@ export function SiteManagerDuringScreen({
                   <Text style={{ fontSize: 12, fontWeight: "800", color: theme.textMuted, textTransform: "uppercase", letterSpacing: 0.8 }}>
                     Incident Type
                   </Text>
-                  <Pressable style={styles.typePicker}>
-                    <Text style={{ color: theme.text }}>Medical Emergency</Text>
+                  <Pressable style={styles.typePicker} onPress={() => setShowTypePicker(true)}>
+                    <Text style={{ color: theme.text }}>{incidentType}</Text>
                     <Ionicons name="chevron-down" size={20} color={theme.textLight} />
                   </Pressable>
                 </View>
-                <Input label="Detailed Description" placeholder="Briefly describe the situation..." />
+                <Input 
+                  label="Detailed Description" 
+                  placeholder="Briefly describe the situation..." 
+                  onChangeText={setDescription}
+                />
                 <View style={styles.severityRow}>
-                  {["Low", "Medium", "High"].map(s => (
-                    <Pressable key={s} style={[styles.severityBtn, s === "High" && { backgroundColor: theme.dangerLight, borderColor: theme.danger }]}>
-                      <Text style={[styles.severityLabel, s === "High" && { color: theme.danger }]}>{s}</Text>
+                  {["low", "medium", "high"].map(s => (
+                    <Pressable 
+                      key={s} 
+                      onPress={() => setSeverity(s as any)}
+                      style={[
+                        styles.severityBtn, 
+                        severity === s && { 
+                          backgroundColor: s === "high" ? theme.dangerLight : s === "medium" ? theme.warningLight : theme.primaryLight, 
+                          borderColor: s === "high" ? theme.danger : s === "medium" ? theme.warning : theme.primary 
+                        }
+                      ]}
+                    >
+                      <Text style={[
+                        styles.severityLabel, 
+                        severity === s && { 
+                          color: s === "high" ? theme.danger : s === "medium" ? theme.warning : theme.primary 
+                        }
+                      ]}>{s}</Text>
                     </Pressable>
                   ))}
                 </View>
-                <Button label="Post Incident Report" onPress={() => {}} tone="danger" />
+                <Button 
+                  label="Post Incident Report" 
+                  onPress={() => {
+                    console.log("Reporting:", { incidentType, description, severity });
+                    alert(`Reported: ${incidentType} (${severity})`);
+                  }} 
+                  tone="danger" 
+                />
               </View>
+
+              {/* Type Picker Modal */}
+              <Modal visible={showTypePicker} transparent animationType="slide">
+                <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
+                  <View style={{ backgroundColor: "#fff", borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 24, paddingBottom: 40 }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                      <Text style={{ fontSize: 20, fontWeight: "900", color: theme.text }}>Select Incident Type</Text>
+                      <Pressable onPress={() => setShowTypePicker(false)}>
+                        <Ionicons name="close-circle" size={28} color={theme.textLight} />
+                      </Pressable>
+                    </View>
+                    <View style={{ gap: 12 }}>
+                      {incidentTypes.map(type => (
+                        <Pressable 
+                          key={type} 
+                          onPress={() => {
+                            setIncidentType(type);
+                            setShowTypePicker(false);
+                          }}
+                          style={{ 
+                            padding: 18, 
+                            borderRadius: 16, 
+                            backgroundColor: incidentType === type ? theme.primaryLight : theme.surfaceSoft,
+                            borderWidth: 1,
+                            borderColor: incidentType === type ? theme.primary : theme.line,
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center"
+                          }}
+                        >
+                          <Text style={{ color: incidentType === type ? theme.primary : theme.text, fontWeight: "700" }}>{type}</Text>
+                          {incidentType === type && <Ionicons name="checkmark-circle" size={20} color={theme.primary} />}
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                </View>
+              </Modal>
             </SectionCard>
           </View>
         );
