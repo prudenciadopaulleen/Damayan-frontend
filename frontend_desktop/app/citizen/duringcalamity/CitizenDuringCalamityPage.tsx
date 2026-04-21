@@ -1,15 +1,14 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 const sidebarLinks = [
-  { label: "Home", href: "/citizen/beforecalamity", key: "home" },
-  { label: "Risk Map", href: "/citizen/duringcalamity", key: "risk-map" },
-  { label: "Checklists", href: "/citizen/beforecalamity#checklists", key: "checklists" },
-  { label: "Reporting", href: "/citizen/duringcalamity#tickets", key: "reporting" },
-  { label: "Support", href: "/citizen/duringcalamity#broadcast", key: "support" },
+  "Home",
+  "Risk Map",
+  "Checklists",
+  "Reporting",
+  "Support",
 ];
+
+const topLinks = ["Dashboard", "Emergency", "Shelters", "Prepare"];
 
 const tickets = [
   {
@@ -33,24 +32,6 @@ const tickets = [
 ];
 
 export default function CitizenDuringCalamityPage() {
-  const [activeSidebarItem, setActiveSidebarItem] = useState("risk-map");
-
-  useEffect(() => {
-    const hash = window.location.hash;
-
-    if (hash === "#tickets") {
-      setActiveSidebarItem("reporting");
-      return;
-    }
-
-    if (hash === "#broadcast") {
-      setActiveSidebarItem("support");
-      return;
-    }
-
-    setActiveSidebarItem("risk-map");
-  }, []);
-
   return (
     <div className="citizen-response-page">
       <aside className="citizen-response-sidebar">
@@ -62,14 +43,19 @@ export default function CitizenDuringCalamityPage() {
         <nav className="citizen-response-sidebar-nav" aria-label="Citizen sections">
           {sidebarLinks.map((item, index) => (
             <Link
-              key={item.label}
-              className={activeSidebarItem === item.key ? "is-active" : undefined}
-              href={item.href}
-              onClick={() => {
-                if (item.key === "reporting" || item.key === "support" || item.key === "risk-map") {
-                  setActiveSidebarItem(item.key);
-                }
-              }}
+              key={item}
+              className={index === 1 ? "is-active" : undefined}
+              href={
+                index === 0
+                  ? "/citizen/beforecalamity"
+                  : index === 1
+                    ? "/citizen/duringcalamity"
+                    : index === 2
+                      ? "#tickets"
+                      : index === 3
+                        ? "#broadcast"
+                        : "/citizen/auth"
+              }
             >
               <span className="citizen-response-nav-icon" aria-hidden="true">
                 {index === 0
@@ -82,16 +68,10 @@ export default function CitizenDuringCalamityPage() {
                         ? "R"
                         : "S"}
               </span>
-              <span>{item.label}</span>
+              <span>{item}</span>
             </Link>
           ))}
         </nav>
-
-        <div className="citizen-response-sidebar-footer">
-          <Link className="citizen-response-signout" href="/citizen/login">
-            Sign Out
-          </Link>
-        </div>
       </aside>
 
       <div className="citizen-response-shell">
@@ -99,9 +79,27 @@ export default function CitizenDuringCalamityPage() {
           <div className="citizen-response-topbar-inner">
             <div className="citizen-response-brand-side">
               <Link className="citizen-response-logo" href="/citizen/duringcalamity">
-                DAMAYAN
+                ReliefConnect
               </Link>
-              <p className="citizen-response-topbar-label">Emergency response dashboard</p>
+
+              <nav className="citizen-response-topnav" aria-label="Primary">
+                {topLinks.map((item, index) => (
+                  <Link
+                    key={item}
+                    href={
+                      index === 0
+                        ? "/citizen/beforecalamity"
+                        : index === 1
+                          ? "/citizen/duringcalamity"
+                          : index === 2
+                            ? "#map-cards"
+                            : "/citizen/beforecalamity#checklists"
+                    }
+                  >
+                    {item}
+                  </Link>
+                ))}
+              </nav>
             </div>
 
             <div className="citizen-response-actions">
@@ -113,19 +111,7 @@ export default function CitizenDuringCalamityPage() {
               </Link>
               <div className="citizen-response-meta-actions">
                 <Link href="#broadcast">Alerts</Link>
-                <Link
-                  className="citizen-response-profile-chip"
-                  href="/citizen/beforecalamity"
-                  aria-label="Open citizen profile"
-                >
-                  <span className="citizen-response-profile-avatar" aria-hidden="true">
-                    CP
-                  </span>
-                  <span className="citizen-response-profile-copy">
-                    <strong>Citizen</strong>
-                    <small>Profile</small>
-                  </span>
-                </Link>
+                <Link href="/citizen/auth">Account</Link>
               </div>
             </div>
           </div>
@@ -215,6 +201,7 @@ export default function CitizenDuringCalamityPage() {
 
           <section className="citizen-response-footer-actions">
             <Link href="/citizen/beforecalamity">Back To Prepare</Link>
+            <Link href="/citizen/auth">Sign Out</Link>
           </section>
         </main>
       </div>
@@ -226,7 +213,7 @@ export default function CitizenDuringCalamityPage() {
         </Link>
         <Link href="#broadcast">SOS</Link>
         <Link href="#tickets">Tasks</Link>
-        <Link href="/citizen/login">Profile</Link>
+        <Link href="/citizen/auth">Profile</Link>
       </nav>
     </div>
   );

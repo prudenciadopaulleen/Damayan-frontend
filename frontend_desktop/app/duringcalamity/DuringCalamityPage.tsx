@@ -1,21 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { useState } from "react";
 
 export default function DuringCalamityPage() {
-  const [checkInMode, setCheckInMode] = useState<"scan" | "manual">("scan");
-  const [activeNavItem, setActiveNavItem] = useState("Dashboard");
-
-  const sidebarItems = [
-    { label: "Dashboard", icon: "D" },
-    { label: "Assessment", icon: "A" },
-    { label: "Distribution", icon: "P" },
-    { label: "Recovery", icon: "R" },
-    { label: "Impact Reports", icon: "I" },
-    { label: "Settings", icon: "S" },
-  ];
-
   const resources = [
     {
       name: "Potable Water",
@@ -24,8 +9,7 @@ export default function DuringCalamityPage() {
       tone: "primary",
       icon: "W",
     },
-    {
-      name: "Trauma Kits",
+    {auma Kits",
       availability: "12% LOW",
       value: 12,
       tone: "error",
@@ -34,7 +18,8 @@ export default function DuringCalamityPage() {
     {
       name: "Mobile Power",
       availability: "84% AVAIL",
-      value: 84,
+      value: 84
+      name: "Tr,
       tone: "primary",
       icon: "P",
     },
@@ -91,17 +76,30 @@ export default function DuringCalamityPage() {
             </div>
 
             <nav className="response-nav">
-              {sidebarItems.map((item) => (
-                <button
-                  key={item.label}
-                  className={activeNavItem === item.label ? "is-active" : undefined}
-                  type="button"
-                  onClick={() => setActiveNavItem(item.label)}
-                >
-                  <span className="response-nav-icon">{item.icon}</span>
-                  <span>{item.label}</span>
-                </button>
-              ))}
+              <button className="is-active" type="button">
+                <span className="response-nav-icon">D</span>
+                <span>Dashboard</span>
+              </button>
+              <button type="button">
+                <span className="response-nav-icon">A</span>
+                <span>Assessment</span>
+              </button>
+              <button type="button">
+                <span className="response-nav-icon">P</span>
+                <span>Distribution</span>
+              </button>
+              <button type="button">
+                <span className="response-nav-icon">R</span>
+                <span>Recovery</span>
+              </button>
+              <button type="button">
+                <span className="response-nav-icon">I</span>
+                <span>Impact Reports</span>
+              </button>
+              <button type="button">
+                <span className="response-nav-icon">S</span>
+                <span>Settings</span>
+              </button>
             </nav>
           </div>
 
@@ -110,7 +108,7 @@ export default function DuringCalamityPage() {
               Log Rapid Report
             </button>
             <button type="button">Support</button>
-            <Link className="response-signout-link" href="/loginportal">
+            <Link className="response-signout-link" href="/login">
               Sign Out
             </Link>
           </div>
@@ -181,7 +179,7 @@ export default function DuringCalamityPage() {
                   incident reporting.
                 </p>
               </div>
-              <Link className="swimlane-back-link" href="/site-manager/beforecalamity">
+              <Link className="swimlane-back-link" href="/beforecalamity">
                 Back to Before Calamity
               </Link>
             </div>
@@ -242,60 +240,37 @@ export default function DuringCalamityPage() {
               </article>
 
               <div className="scanner-decision-card">
+                <div className="scanner-decision-diamond">
+                  <span>Has QR Code / App?</span>
+                </div>
                 <div className="scanner-path-grid">
-                  <button
-                    className={`scanner-path-card ${
-                      checkInMode === "scan" ? "is-active" : ""
-                    }`}
-                    type="button"
-                    onClick={() => setCheckInMode("scan")}
-                  >
+                  <div className="scanner-path-card">
                     <strong>Yes</strong>
-                    <p>Scan QR Code</p>
-                  </button>
-                  <button
-                    className={`scanner-path-card ${
-                      checkInMode === "manual" ? "is-active" : ""
-                    }`}
-                    type="button"
-                    onClick={() => setCheckInMode("manual")}
-                  >
+                    <p>Scan QR</p>
+                  </div>
+                  <div className="scanner-path-card">
                     <strong>No</strong>
-                    <p>Manual Entry</p>
-                  </button>
+                    <p>Manually Log ID</p>
+                  </div>
                 </div>
                 <div className="scanner-followup">
-                  {checkInMode === "scan"
-                    ? "Scanner mode is active. Use the camera station to capture evacuee QR credentials."
-                    : "Manual backup is active. Enter evacuee details below when no QR code is available."}
+                  Both paths continue to capacity updates and distribution
+                  tracking.
                 </div>
               </div>
 
-              {checkInMode === "manual" ? (
-                <div className="scanner-manual-card">
-                  <h3>Manual Intake Backup</h3>
-                  <div className="manual-field">
-                    <label>Evacuee Name</label>
-                    <input placeholder="Enter full name" type="text" />
-                  </div>
-                  <div className="manual-field">
-                    <label>Temporary ID</label>
-                    <input placeholder="Assign or enter ID" type="text" />
-                  </div>
-                  <button type="button">Save Manual Entry</button>
+              <div className="scanner-manual-card">
+                <h3>Manual Intake Backup</h3>
+                <div className="manual-field">
+                  <label>Evacuee Name</label>
+                  <input placeholder="Enter full name" type="text" />
                 </div>
-              ) : (
-                <div className="scanner-manual-card scanner-manual-card-placeholder">
-                  <h3>QR Scanner Ready</h3>
-                  <p>
-                    Manual intake stays hidden until the manager selects
-                    <strong> Manual Entry</strong>.
-                  </p>
-                  <button type="button" onClick={() => setCheckInMode("manual")}>
-                    Switch To Manual Entry
-                  </button>
+                <div className="manual-field">
+                  <label>Temporary ID</label>
+                  <input placeholder="Assign or enter ID" type="text" />
                 </div>
-              )}
+                <button type="button">Save Manual Entry</button>
+              </div>
             </div>
           </section>
 
