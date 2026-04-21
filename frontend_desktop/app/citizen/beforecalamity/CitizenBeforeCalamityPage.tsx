@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 const checklist = [
   {
@@ -25,11 +25,24 @@ const checklist = [
 ];
 
 const sidebarLinks = [
-  { label: "Home", href: "#home", key: "home", icon: "H" },
+  { label: "Home", href: "/citizen/beforecalamity", key: "home", icon: "H" },
+  { label: "Risk Map", href: "#sector-map", key: "risk-map", icon: "M" },
   { label: "Checklists", href: "#checklists", key: "checklists", icon: "C" },
-  { label: "Household", href: "#household", key: "household", icon: "R" },
-  { label: "Support", href: "#sector-map", key: "support", icon: "S" },
+  { label: "Reporting", href: "/citizen/duringcalamity", key: "reporting", icon: "A" },
+  { label: "Support", href: "#support", key: "support", icon: "S" },
 ];
+
+const topLinks = ["Dashboard", "Emergency", "Shelters", "Prepare"];
+
+// Simple Profile Chip Component
+function LivingProfileChip() {
+  return (
+    <div className="citizen-web-profile-chip">
+      <div className="citizen-web-profile-avatar">S</div>
+      <span>Serene Relief</span>
+    </div>
+  );
+}
 
 export default function CitizenBeforeCalamityPage() {
   const [activeSidebarItem, setActiveSidebarItem] = useState("home");
@@ -176,12 +189,11 @@ export default function CitizenBeforeCalamityPage() {
           <p>Stay Safe, Stay Informed</p>
         </div>
         <nav className="citizen-web-sidebar-nav" aria-label="Citizen sections">
-          {sidebarLinks.map((item, index) => (
+          {sidebarLinks.map((item) => (
             <Link
-              key={item.label}
+              key={item.key}
               className={activeSidebarItem === item.key ? "is-active" : undefined}
               href={item.href}
-              onClick={() => setActiveSidebarItem(item.key)}
             >
               <span className="citizen-web-nav-icon" aria-hidden="true">
                 {item.icon}
@@ -191,7 +203,7 @@ export default function CitizenBeforeCalamityPage() {
           ))}
         </nav>
         <div className="citizen-web-sidebar-footer">
-          <Link className="citizen-web-signout" href="/citizen/login">Sign Out</Link>
+          <Link className="citizen-web-signout" href="/citizen/auth">Sign Out</Link>
         </div>
       </aside>
 
@@ -740,19 +752,6 @@ export default function CitizenBeforeCalamityPage() {
           </footer>
         </main>
       </div>
-      <button className="citizen-web-support-fab">Help</button>
     </div>
-  );
-}
-
-function LivingProfileChip() {
-  return (
-    <Link className="citizen-web-profile-chip" href="/citizen/beforecalamity">
-      <span className="citizen-web-profile-avatar">CP</span>
-      <span className="citizen-web-profile-copy">
-        <strong>Citizen</strong>
-        <small>Profile</small>
-      </span>
-    </Link>
   );
 }

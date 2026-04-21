@@ -34,6 +34,13 @@ const shelterOptions = [
   { name: "San Miguel Elementary", distance: "2.4 km", capacity: "180 / 400", status: "Open" },
 ];
 
+const sidebarLinks = [
+  { label: "Home", icon: "H", key: "home", href: "/citizen/beforecalamity" },
+  { label: "Checklists", icon: "C", key: "checklists", href: "/citizen/beforecalamity#checklists" },
+  { label: "Reporting", icon: "R", key: "report", href: "#" },
+  { label: "Support", icon: "S", key: "support", href: "#broadcast" },
+];
+
 function getStepMeta(step: FlowStep) {
   switch (step) {
     case "rescue_decision":
@@ -261,7 +268,6 @@ export default function CitizenDuringCalamityPage() {
           </div>
 
           <div className="wizard-footer">
-            {/* If rescue is needed, they wait. If they are self-evacuating but reported an incident anyway, they proceed to safe zone */}
             <button className="wizard-action-btn is-primary" onClick={() => setStep("wait_rescue")}>
               View Live Status
             </button>
@@ -300,7 +306,6 @@ export default function CitizenDuringCalamityPage() {
       );
     }
 
-    // BRANCH: NO Rescue Needed -> Self Evacuate
     if (step === "self_evacuate") {
       return (
         <div className="wizard-panel-body">
@@ -421,7 +426,6 @@ export default function CitizenDuringCalamityPage() {
       );
     }
 
-    // Logged In
     return (
       <div className="wizard-panel-body">
         <h2>{identityType === "INDIVIDUAL" ? "Individual Checked In" : "Household Checked In"}</h2>
@@ -459,21 +463,14 @@ export default function CitizenDuringCalamityPage() {
           <p>Stay Safe, Stay Informed</p>
         </div>
         <nav className="citizen-response-sidebar-nav" aria-label="Citizen sections">
-          <Link href="/citizen/beforecalamity">
-            <span className="citizen-response-nav-icon">H</span><span>Home</span>
-          </Link>
-          <Link href="/citizen/beforecalamity#checklists">
-            <span className="citizen-response-nav-icon">C</span><span>Checklists</span>
-          </Link>
-          <a className="is-active" href="#report" onClick={(e) => { e.preventDefault(); setStep("report_incident"); }}>
-            <span className="citizen-response-nav-icon">R</span><span>Reporting</span>
-          </a>
-          <Link href="#broadcast">
-            <span className="citizen-response-nav-icon">S</span><span>Support</span>
-          </Link>
+          {sidebarLinks.map((item) => (
+            <Link key={item.key} href={item.href} className={item.key === "report" ? "is-active" : ""}>
+              <span className="citizen-response-nav-icon">{item.icon}</span><span>{item.label}</span>
+            </Link>
+          ))}
         </nav>
         <div className="citizen-response-sidebar-footer">
-          <Link className="citizen-response-signout" href="/citizen/login">Sign Out</Link>
+          <Link className="citizen-response-signout" href="/citizen/auth">Sign Out</Link>
         </div>
       </aside>
 
@@ -502,6 +499,11 @@ export default function CitizenDuringCalamityPage() {
 
             {renderStepContent()}
           </div>
+          
+          <section className="citizen-response-footer-actions">
+            <Link href="/citizen/beforecalamity">Back To Prepare</Link>
+            <Link href="/citizen/auth">Sign Out</Link>
+          </section>
         </section>
       </main>
     </div>

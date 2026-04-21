@@ -6,6 +6,13 @@ import { useState } from "react";
 
 type SignupStep = "FORM" | "SUCCESS";
 
+const verificationSteps = [
+  "Account Creation",
+  "Identity Submission",
+  "Staff Verification",
+  "Portal Activation",
+];
+
 export default function CitizenSignupPage() {
   const router = useRouter();
   const [step, setStep] = useState<SignupStep>("FORM");
@@ -19,7 +26,6 @@ export default function CitizenSignupPage() {
   if (step === "SUCCESS") {
     return (
       <main className="auth-root citizen-auth">
-        {/* Decorative blobs */}
         <div className="auth-blob auth-blob-1" />
         <div className="auth-blob auth-blob-2" />
 
@@ -98,7 +104,6 @@ export default function CitizenSignupPage() {
 
   return (
     <main className="auth-root citizen-auth">
-      {/* Decorative blobs */}
       <div className="auth-blob auth-blob-1" />
       <div className="auth-blob auth-blob-2" />
 
@@ -118,6 +123,16 @@ export default function CitizenSignupPage() {
             <p className="auth-subline">
               Register for the citizen portal to receive real-time alerts, access your digital relief ID, and report incidents directly.
             </p>
+          </div>
+
+          <div className="auth-features" style={{ marginTop: "20px" }}>
+            <strong style={{ display: "block", fontSize: "0.72rem", fontWeight: "800", letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", marginBottom: "16px" }}>Verification Path</strong>
+            {verificationSteps.map((s, index) => (
+              <div key={s} className="auth-feature-item" style={{ padding: "12px 16px", borderRadius: "12px" }}>
+                <span style={{ fontSize: "0.8rem", fontWeight: "900", color: "#81c784", width: "24px" }}>0{index + 1}</span>
+                <p style={{ margin: 0, fontSize: "0.88rem", color: "#fff" }}>{s}</p>
+              </div>
+            ))}
           </div>
         </div>
       </aside>
@@ -190,11 +205,11 @@ export default function CitizenSignupPage() {
               </div>
             </div>
 
-            <button className="auth-submit" type="submit">Complete Registration</button>
+            <button className="auth-submit" type="submit" style={{ marginTop: "16px" }}>Complete Registration</button>
           </form>
 
           <p className="auth-switch-copy" style={{ marginTop: "32px", textAlign: "center" }}>
-            Already have an account? <Link href="/citizen/login">Log in here</Link>
+            Already have an account? <Link href="/citizen/auth">Log in here</Link>
           </p>
         </div>
       </section>
