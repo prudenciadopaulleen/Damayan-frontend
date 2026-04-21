@@ -496,7 +496,7 @@ export default function CitizenDuringCalamityPage() {
           <Link className="citizen-response-backlink" href="/citizen/beforecalamity">
             Back To Prepare
           </Link>
-          <Link className="citizen-response-signout" href="/citizen/auth">Sign Out</Link>
+          <Link className="citizen-response-signout" href="/citizen/login">Sign Out</Link>
         </div>
       </aside>
 

@@ -113,7 +113,7 @@ export default function DuringCalamityPage() {
               Log Rapid Report
             </button>
             <button type="button">Support</button>
-            <Link className="response-signout-link" href="/login">
+            <Link className="response-signout-link" href="/site-manager/login">
               Sign Out
             </Link>
           </div>
@@ -186,7 +186,7 @@ export default function DuringCalamityPage() {
                   incident reporting.
                 </p>
               </div>
-              <Link className="swimlane-back-link" href="/beforecalamity">
+              <Link className="swimlane-back-link" href="/site-manager/beforecalamity">
                 Back to Before Calamity
               </Link>
             </div>

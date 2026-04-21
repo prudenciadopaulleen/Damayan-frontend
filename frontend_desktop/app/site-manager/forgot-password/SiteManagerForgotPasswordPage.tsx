@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import AuthLayout from "../../components/AuthLayout";
 
 type ForgotStep = "request" | "sent" | "create";
 
@@ -20,9 +21,7 @@ export default function SiteManagerForgotPasswordPage() {
       return (
         <>
           <header className="auth-form-head">
-            <span className="auth-badge" style={{ background: "rgba(27,94,32,0.1)", color: "#1b5e20" }}>
-              Password Reset
-            </span>
+            <span className="auth-badge">Password Reset</span>
             <h2 className="auth-form-title">Forgot your<br />password?</h2>
             <p className="auth-form-sub">
               Enter your registered email or phone number. We'll send a secure
@@ -68,12 +67,10 @@ export default function SiteManagerForgotPasswordPage() {
 
     if (step === "sent") {
       return (
-        <>
+        <div style={{ textAlign: "center" }}>
           <div className="auth-success-icon">📨</div>
           <header className="auth-form-head" style={{ textAlign: "center" }}>
-            <span className="auth-badge" style={{ background: "rgba(27,94,32,0.1)", color: "#1b5e20" }}>
-              Link Sent
-            </span>
+            <span className="auth-badge">Link Sent</span>
             <h2 className="auth-form-title">Check your<br />inbox</h2>
             <p className="auth-form-sub">
               A reset link was sent to <strong>{contact || "your registered contact"}</strong>.
@@ -102,7 +99,7 @@ export default function SiteManagerForgotPasswordPage() {
           >
             ← Resend to a Different Contact
           </button>
-        </>
+        </div>
       );
     }
 
@@ -110,9 +107,7 @@ export default function SiteManagerForgotPasswordPage() {
     return (
       <>
         <header className="auth-form-head">
-          <span className="auth-badge" style={{ background: "rgba(27,94,32,0.1)", color: "#1b5e20" }}>
-            New Password
-          </span>
+          <span className="auth-badge">New Password</span>
           <h2 className="auth-form-title">Create a new<br />password</h2>
           <p className="auth-form-sub">
             Choose a strong password. Must be at least 8 characters.
@@ -177,67 +172,41 @@ export default function SiteManagerForgotPasswordPage() {
   }
 
   return (
-    <main className="auth-root sm-auth">
-      <div className="auth-blob auth-blob-1" />
-      <div className="auth-blob auth-blob-2" />
-
-      <aside className="auth-brand">
-        <div className="auth-brand-inner">
-          <div className="auth-logo">
-            <div className="auth-logo-mark">D</div>
-            <div>
-              <span className="auth-logo-name">DAMAYAN</span>
-              <p className="auth-logo-sub">Site Manager Portal</p>
+    <AuthLayout
+      persona="sm"
+      portalName="Site Manager Portal"
+      eyebrow="Account Recovery"
+      headline={
+        <>
+          Reset.<br />Recover.<br />
+          <span className="auth-headline-accent">Re-enter.</span>
+        </>
+      }
+      subline="Regain access to your site operations dashboard in three simple steps. Your relief site needs you back quickly."
+      brandAddon={
+        <div className="auth-steps-timeline">
+          {[
+            { n: 1, label: "Request Reset Link", active: step === "request", done: step !== "request" },
+            { n: 2, label: "Receive via Email / SMS", active: step === "sent", done: step === "create" },
+            { n: 3, label: "Create New Password", active: step === "create", done: false },
+          ].map((s) => (
+            <div key={s.n} className={`auth-timeline-item${s.active ? " is-active" : ""}${s.done ? " is-done" : ""}`}>
+              <div className="auth-timeline-node">{s.done ? "✓" : s.n}</div>
+              <span>{s.label}</span>
             </div>
-          </div>
-
-          <div className="auth-brand-copy">
-            <p className="auth-eyebrow">Account Recovery</p>
-            <h1 className="auth-headline">
-              Reset.<br />Recover.<br />
-              <span className="auth-headline-accent">Re-enter.</span>
-            </h1>
-            <p className="auth-subline">
-              Regain access to your site operations dashboard in three simple steps.
-              Your relief site needs you back quickly.
-            </p>
-          </div>
-
-          {/* Recovery Steps Timeline */}
-          <div className="auth-steps-timeline">
-            {[
-              { n: 1, label: "Request Reset Link", active: step === "request", done: step !== "request" },
-              { n: 2, label: "Receive via Email / SMS", active: step === "sent", done: step === "create" },
-              { n: 3, label: "Create New Password", active: step === "create", done: false },
-            ].map((s) => (
-              <div key={s.n} className={`auth-timeline-item${s.active ? " is-active" : ""}${s.done ? " is-done" : ""}`}>
-                <div className="auth-timeline-node">{s.done ? "✓" : s.n}</div>
-                <span>{s.label}</span>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
-      </aside>
-
-      <section className="auth-panel">
-        <div className="auth-panel-inner">
-          <div className="auth-mobile-logo">
-            <div className="auth-logo-mark">D</div>
-            <span className="auth-logo-name" style={{ color: "#1b5e20" }}>DAMAYAN</span>
-          </div>
-
-          <div className="auth-step-indicator">
-            {steps.map((s) => (
-              <div
-                key={s}
-                className={`auth-step-dot${step === s ? " is-active" : ""}${steps.indexOf(s) < steps.indexOf(step) ? " is-done" : ""}`}
-              />
-            ))}
-          </div>
-
-          {renderStep()}
-        </div>
-      </section>
-    </main>
+      }
+    >
+      <div className="auth-step-indicator">
+        {steps.map((s) => (
+          <div
+            key={s}
+            className={`auth-step-dot${step === s ? " is-active" : ""}${steps.indexOf(s) < steps.indexOf(step) ? " is-done" : ""}`}
+          />
+        ))}
+      </div>
+      {renderStep()}
+    </AuthLayout>
   );
 }

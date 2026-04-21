@@ -2070,10 +2070,10 @@ function Shell({ onLogout }: { onLogout: () => void }) {
 type Stage = "login" | "awaiting" | "portal";
 
 export default function DispatcherPortal() {
-  const [stage, setStage] = useState<Stage>("login");
+  const [stage, setStage] = useState<Stage>("portal");
   return (
     stage === "login"    ? <LoginPage    onLogin={() => setStage("portal")} onRegister={() => setStage("awaiting")} /> :
     stage === "awaiting" ? <AwaitingPage onProceed={() => setStage("portal")} /> :
-    <Shell onLogout={() => setStage("login")} />
+    <Shell onLogout={() => { window.location.href = "/dispatcher/login"; }} />
   );
 }

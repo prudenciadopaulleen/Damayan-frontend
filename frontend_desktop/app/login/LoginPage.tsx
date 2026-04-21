@@ -21,7 +21,7 @@ const roles: {
     desc: "Register, receive alerts, access your QR ID, and track relief aid.",
     color: "#2E7D32",
     bg: "rgba(46,125,50,0.08)",
-    route: "/citizen/auth",
+    route: "/citizen/login",
   },
   {
     id: "site_manager",
@@ -39,7 +39,7 @@ const roles: {
     desc: "Coordinate rescue teams, manage incident tickets, and dispatch resources.",
     color: "#81C784",
     bg: "rgba(129,199,132,0.1)",
-    route: "/dispatcher",
+    route: "/dispatcher/login",
   },
   {
     id: "admin",
@@ -48,7 +48,7 @@ const roles: {
     desc: "System-wide monitoring, user approvals, and platform reporting.",
     color: "#4E342E",
     bg: "rgba(78,52,46,0.08)",
-    route: "/admin",
+    route: "/admin/login",
   },
 ];
 

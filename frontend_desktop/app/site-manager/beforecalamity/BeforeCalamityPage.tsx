@@ -106,7 +106,7 @@ export default function BeforeCalamityPage() {
               Log Rapid Report
             </button>
             <button type="button">Support</button>
-            <Link className="sidebar-signout-link" href="/login">
+            <Link className="sidebar-signout-link" href="/site-manager/login">
               Sign Out
             </Link>
           </div>
@@ -162,7 +162,7 @@ export default function BeforeCalamityPage() {
                     continue to the during calamity dashboard.
                   </p>
                 </div>
-                <Link className="phase-transition-link" href="/duringcalamity">
+                <Link className="phase-transition-link" href="/site-manager/duringcalamity">
                   Open Active Response
                 </Link>
               </div>
@@ -227,7 +227,7 @@ export default function BeforeCalamityPage() {
                     </div>
                     <Link
                       className="scanner-prep-link"
-                      href="/duringcalamity"
+                      href="/site-manager/duringcalamity"
                     >
                       Open Check-In Flow
                     </Link>

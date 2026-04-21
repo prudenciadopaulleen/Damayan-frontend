@@ -205,7 +205,7 @@ export default function CitizenBeforeCalamityPage() {
           ))}
         </nav>
         <div className="citizen-web-sidebar-footer">
-          <Link className="citizen-web-signout" href="/citizen/auth">Sign Out</Link>
+          <Link className="citizen-web-signout" href="/citizen/login">Sign Out</Link>
         </div>
       </aside>
 

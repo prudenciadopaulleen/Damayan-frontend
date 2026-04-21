@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import AuthLayout from "../../components/AuthLayout";
 
 type ForgotStep = "request" | "sent" | "create";
 
@@ -57,7 +58,7 @@ export default function CitizenForgotPasswordPage() {
             </button>
           </form>
 
-          <Link href="/citizen/auth" className="auth-back-link">
+          <Link href="/citizen/login" className="auth-back-link">
             ← Back to Sign In
           </Link>
         </>
@@ -66,7 +67,7 @@ export default function CitizenForgotPasswordPage() {
 
     if (step === "sent") {
       return (
-        <>
+        <div style={{ textAlign: "center" }}>
           <div className="auth-success-icon">📨</div>
           <header className="auth-form-head" style={{ textAlign: "center" }}>
             <span className="auth-badge">Link Sent</span>
@@ -98,7 +99,7 @@ export default function CitizenForgotPasswordPage() {
           >
             ← Resend to a Different Contact
           </button>
-        </>
+        </div>
       );
     }
 
@@ -117,7 +118,7 @@ export default function CitizenForgotPasswordPage() {
           className="auth-form"
           onSubmit={(e) => {
             e.preventDefault();
-            router.push("/citizen/auth");
+            router.push("/citizen/login");
           }}
         >
           <div className="auth-field">
@@ -163,7 +164,7 @@ export default function CitizenForgotPasswordPage() {
           </button>
         </form>
 
-        <Link href="/citizen/auth" className="auth-back-link">
+        <Link href="/citizen/login" className="auth-back-link">
           ← Back to Sign In
         </Link>
       </>
@@ -171,67 +172,41 @@ export default function CitizenForgotPasswordPage() {
   }
 
   return (
-    <main className="auth-root citizen-auth">
-      <div className="auth-blob auth-blob-1" />
-      <div className="auth-blob auth-blob-2" />
-
-      <aside className="auth-brand">
-        <div className="auth-brand-inner">
-          <div className="auth-logo">
-            <div className="auth-logo-mark">D</div>
-            <div>
-              <span className="auth-logo-name">DAMAYAN</span>
-              <p className="auth-logo-sub">Affected Citizen Portal</p>
+    <AuthLayout
+      persona="citizen"
+      portalName="Affected Citizen Portal"
+      eyebrow="Account Recovery"
+      headline={
+        <>
+          Reset.<br />Recover.<br />
+          <span className="auth-headline-accent">Re-enter.</span>
+        </>
+      }
+      subline="Regain access to your emergency dashboard in just three quick steps — no waiting, no hassle."
+      brandAddon={
+        <div className="auth-steps-timeline">
+          {[
+            { n: 1, label: "Request Reset Link", active: step === "request", done: step !== "request" },
+            { n: 2, label: "Receive via Email / SMS", active: step === "sent", done: step === "create" },
+            { n: 3, label: "Create New Password", active: step === "create", done: false },
+          ].map((s) => (
+            <div key={s.n} className={`auth-timeline-item${s.active ? " is-active" : ""}${s.done ? " is-done" : ""}`}>
+              <div className="auth-timeline-node">{s.done ? "✓" : s.n}</div>
+              <span>{s.label}</span>
             </div>
-          </div>
-
-          <div className="auth-brand-copy">
-            <p className="auth-eyebrow">Account Recovery</p>
-            <h1 className="auth-headline">
-              Reset.<br />Recover.<br />
-              <span className="auth-headline-accent">Re-enter.</span>
-            </h1>
-            <p className="auth-subline">
-              Regain access to your emergency dashboard in just three quick
-              steps — no waiting, no hassle.
-            </p>
-          </div>
-
-          <div className="auth-steps-timeline">
-            {[
-              { n: 1, label: "Request Reset Link", active: step === "request", done: step !== "request" },
-              { n: 2, label: "Receive via Email / SMS", active: step === "sent", done: step === "create" },
-              { n: 3, label: "Create New Password", active: step === "create", done: false },
-            ].map((s) => (
-              <div key={s.n} className={`auth-timeline-item${s.active ? " is-active" : ""}${s.done ? " is-done" : ""}`}>
-                <div className="auth-timeline-node">{s.done ? "✓" : s.n}</div>
-                <span>{s.label}</span>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
-      </aside>
-
-      <section className="auth-panel">
-        <div className="auth-panel-inner">
-          <div className="auth-mobile-logo">
-            <div className="auth-logo-mark">D</div>
-            <span className="auth-logo-name" style={{ color: "#2e7d32" }}>DAMAYAN</span>
-          </div>
-
-          {/* Step indicator dots */}
-          <div className="auth-step-indicator">
-            {steps.map((s) => (
-              <div
-                key={s}
-                className={`auth-step-dot${step === s ? " is-active" : ""}${steps.indexOf(s) < steps.indexOf(step) ? " is-done" : ""}`}
-              />
-            ))}
-          </div>
-
-          {renderStep()}
-        </div>
-      </section>
-    </main>
+      }
+    >
+      <div className="auth-step-indicator">
+        {steps.map((s) => (
+          <div
+            key={s}
+            className={`auth-step-dot${step === s ? " is-active" : ""}${steps.indexOf(s) < steps.indexOf(step) ? " is-done" : ""}`}
+          />
+        ))}
+      </div>
+      {renderStep()}
+    </AuthLayout>
   );
 }
