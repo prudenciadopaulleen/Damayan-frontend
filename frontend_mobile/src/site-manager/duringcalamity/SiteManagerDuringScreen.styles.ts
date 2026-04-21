@@ -63,4 +63,7 @@ export const styles = StyleSheet.create({
     borderColor: theme.line,
     marginTop: 8,
   },
+  manualWrap: {
+    gap: 10,
+  },
 });

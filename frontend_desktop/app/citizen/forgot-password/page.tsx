@@ -1,4 +1,4 @@
-import "../login/page.css";
+import "../auth/page.css";
 import "./page.css";
 import CitizenForgotPasswordPage from "./CitizenForgotPasswordPage";
 

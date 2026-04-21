@@ -34,12 +34,10 @@ const sidebarLinks = [
 
 const topLinks = ["Dashboard", "Emergency", "Shelters", "Prepare"];
 
-// Simple Profile Chip Component
-function LivingProfileChip() {
+function CitizenAvatarChip() {
   return (
-    <div className="citizen-web-profile-chip">
-      <div className="citizen-web-profile-avatar">S</div>
-      <span>Serene Relief</span>
+    <div className="citizen-web-profile-avatar" aria-label="Citizen profile">
+      SR
     </div>
   );
 }
@@ -140,6 +138,10 @@ export default function CitizenBeforeCalamityPage() {
         setActiveSidebarItem("checklists");
         return;
       }
+      if (hash === "#support") {
+        setActiveSidebarItem("support");
+        return;
+      }
       setActiveSidebarItem("home");
     }
 
@@ -156,7 +158,6 @@ export default function CitizenBeforeCalamityPage() {
       {showNotificationPrompt && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}>
           <div style={{ backgroundColor: "#fff", padding: "40px", borderRadius: "32px", maxWidth: "450px", textAlign: "center", boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}>
-             <div style={{ fontSize: "40px", marginBottom: "20px" }}>🔔</div>
              <h2 style={{ fontSize: "24px", fontWeight: "900", marginBottom: "12px" }}>Enable Alerts?</h2>
              <p style={{ color: "#707a6c", lineHeight: "1.6", marginBottom: "32px" }}>Receive real-time surge warnings and evacuation route changes directly on your desktop.</p>
              <div style={{ display: "flex", gap: "12px" }}>
@@ -194,6 +195,7 @@ export default function CitizenBeforeCalamityPage() {
               key={item.key}
               className={activeSidebarItem === item.key ? "is-active" : undefined}
               href={item.href}
+              onClick={() => setActiveSidebarItem(item.key)}
             >
               <span className="citizen-web-nav-icon" aria-hidden="true">
                 {item.icon}
@@ -211,12 +213,13 @@ export default function CitizenBeforeCalamityPage() {
         <header className="citizen-web-topbar">
           <div className="citizen-web-topbar-inner">
             <div className="citizen-web-topbar-copy">
-              <Link className="citizen-web-logo" href="/citizen/beforecalamity">Damayan Connect</Link>
-              <p>Preparedness dashboard</p>
+              <Link className="citizen-web-logo" href="/citizen/beforecalamity">
+                Damayan Connect Preparedness Dashboard
+              </Link>
             </div>
             <div className="citizen-web-topactions">
               <Link href="/citizen/duringcalamity#broadcast">Alerts</Link>
-              <LivingProfileChip />
+              <CitizenAvatarChip />
             </div>
           </div>
         </header>
@@ -515,8 +518,8 @@ export default function CitizenBeforeCalamityPage() {
                         <div key={index} className="member-card-v2" style={{ borderLeft: "6px solid #ffba38" }}>
                            <div className="member-card-head">
                              <div className="member-card-id">
-                               <div className="member-id-circle" style={{ backgroundColor: "#7e5700", color: "#fff" }}>🐾</div>
-                               <h4 style={{ margin: 0, fontSize: "1.2rem", fontWeight: "800" }}>Household Animal</h4>
+                             <div className="member-id-circle" style={{ backgroundColor: "#7e5700", color: "#fff" }}>P</div>
+                             <h4 style={{ margin: 0, fontSize: "1.2rem", fontWeight: "800" }}>Household Animal</h4>
                              </div>
                              {animals.length > 1 && (
                                <button className="member-remove-btn" onClick={() => handleRemoveAnimal(index)}>Remove Animal</button>
@@ -556,7 +559,7 @@ export default function CitizenBeforeCalamityPage() {
                                  onClick={() => handleAnimalChange(index, "needsCage", !animal.needsCage)}
                                  style={{ width: "fit-content", cursor: "pointer" }}
                                >
-                                 {animal.needsCage ? "📦 Container Provided" : "⚠️ Assistance Required"}
+                                 {animal.needsCage ? "Container Provided" : "Assistance Required"}
                                </div>
                              </div>
                            </div>
@@ -586,16 +589,33 @@ export default function CitizenBeforeCalamityPage() {
               {/* Informational Sidebars */}
               <aside className="info-sidebar">
                 <div className="sidebar-box is-accent">
-                  <h4>🛡️ Privacy Protocol</h4>
+                  <span className="sidebar-box-kicker">Protected Data</span>
+                  <h4>Privacy Protocol</h4>
                   <p>Your health and family data is encrypted and only shared with verified humanitarian response organizations during a declared emergency state.</p>
+                  <div className="sidebar-box-stat">
+                    <strong>Access Scope</strong>
+                    <span>Verified responders only</span>
+                  </div>
                 </div>
                 <div className="sidebar-box">
-                  <h4>💡 Why this matters</h4>
+                  <span className="sidebar-box-kicker">Operational Value</span>
+                  <h4>Why this matters</h4>
                   <p>Accurate household data helps responders calculate food ratios, specialized transport, and medical supply distribution for your exact sector.</p>
+                  <ul className="sidebar-box-list">
+                    <li>Faster aid allocation per household size</li>
+                    <li>Better medical triage for flagged conditions</li>
+                    <li>More accurate transport and shelter planning</li>
+                  </ul>
                 </div>
                 <div className="sidebar-box">
-                  <h4>📦 Aid Clustering</h4>
+                  <span className="sidebar-box-kicker">Household Mode</span>
+                  <h4>Aid Clustering</h4>
                   <p>Registering as a family allows you to receive unified relief packages and stay together if evacuation is triggered.</p>
+                  <div className="sidebar-box-tags">
+                    <span>Shared QR</span>
+                    <span>Linked Alerts</span>
+                    <span>Grouped Relief</span>
+                  </div>
                 </div>
               </aside>
             </div>
@@ -609,7 +629,7 @@ export default function CitizenBeforeCalamityPage() {
               borderRadius: "3rem", 
               textAlign: "center"
             }}>
-               <div style={{ backgroundColor: "#0d631b", width: "80px", height: "80px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "32px", margin: "0 auto 32px" }}>✓</div>
+               <div style={{ backgroundColor: "#0d631b", width: "80px", height: "80px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "32px", margin: "0 auto 32px" }}>S</div>
                <h3 style={{ fontSize: "2.5rem", fontWeight: "900", margin: "0 0 1rem" }}>Registration Complete</h3>
                <p style={{ color: "#586054", fontSize: "1.2rem", marginBottom: "3rem" }}>Your Household Identity has been verified and synced with local response stations.</p>
                
@@ -745,7 +765,7 @@ export default function CitizenBeforeCalamityPage() {
             </div>
           </section>
 
-          <footer className="citizen-web-footer-actions">
+          <footer className="citizen-web-footer-actions" id="support">
             <Link className="is-primary" href="/citizen/duringcalamity" style={{ textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               Open Emergency Portal
             </Link>

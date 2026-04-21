@@ -96,7 +96,7 @@ export function RoleSelectorScreen({ onNavigate }: { onNavigate: (route: AppRout
       </View>
 
       <View style={{ paddingBottom: 40 }}>
-        <View style={{ px: 24, mb: 16 }}>
+        <View style={{ paddingHorizontal: 24, marginBottom: 16 }}>
           <Text style={styles.selectorHeadText}>SELECT YOUR ROLE TO CONTINUE</Text>
         </View>
         

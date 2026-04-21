@@ -75,9 +75,9 @@ export function SiteManagerBeforeScreen({
           <Text style={{ fontWeight: "800", color: theme.textLight }}>{completedCount} / {checklist.length}</Text>
         </View>
         
-        <View style={{ height: 8, backgroundColor: theme.surfaceSoft, borderRadius: 4, marginBottom: 20, overflow: "hidden" }}>
-          <View style={{ height: "100%", width: `${progressPercent}%`, backgroundColor: theme.primary }} />
-        </View>
+          <View style={{ height: 8, backgroundColor: theme.surfaceSoft, borderRadius: 4, marginBottom: 20, overflow: "hidden" }}>
+          <View style={{ height: "100%", width: `${progressPercent}%` as const, backgroundColor: theme.primary }} />
+          </View>
 
         {checklist.map((item) => {
           const isReady = item.status === "Ready";
@@ -141,7 +141,13 @@ export function SiteManagerBeforeScreen({
               <Text style={{ fontSize: 12, color: theme.textMuted }}>{item.current} / {item.total}</Text>
             </View>
             <View style={{ height: 6, backgroundColor: theme.surfaceSoft, borderRadius: 3, overflow: "hidden" }}>
-              <View style={{ height: "100%", width: item.percent, backgroundColor: item.percent === "100%" ? theme.success : theme.primary }} />
+              <View
+                style={{
+                  height: "100%",
+                  width: item.percent as `${number}%`,
+                  backgroundColor: item.percent === "100%" ? theme.success : theme.primary,
+                }}
+              />
             </View>
           </View>
         ))}

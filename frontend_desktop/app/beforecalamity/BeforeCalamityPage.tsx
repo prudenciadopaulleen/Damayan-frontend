@@ -116,12 +116,12 @@ export default function BeforeCalamityPage() {
       <main className="preparedness-main">
         <header className="preparedness-topbar">
           <div className="topbar-left">
-            <span className="topbar-title">Humanitarian Response</span>
+            <span className="topbar-title">Evacuation Management</span>
             <div className="topbar-search">
               <span className="topbar-search-icon">S</span>
               <input
                 type="text"
-                placeholder="Search resources or regions..."
+                placeholder="Search evacuees or shelters..."
               />
             </div>
           </div>
@@ -135,12 +135,7 @@ export default function BeforeCalamityPage() {
           </div>
 
           <div className="topbar-right">
-            <button type="button">N</button>
-            <button type="button">H</button>
             <span className="topbar-divider" />
-            <button className="deploy-button" type="button">
-              Deploy Team
-            </button>
             <div className="topbar-avatar">SM</div>
           </div>
         </header>

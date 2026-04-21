@@ -57,7 +57,7 @@ export default function CitizenForgotPasswordPage() {
             </button>
           </form>
 
-          <Link href="/citizen/login" className="auth-back-link">
+          <Link href="/citizen/auth" className="auth-back-link">
             ← Back to Sign In
           </Link>
         </>
@@ -117,7 +117,7 @@ export default function CitizenForgotPasswordPage() {
           className="auth-form"
           onSubmit={(e) => {
             e.preventDefault();
-            router.push("/citizen/login");
+            router.push("/citizen/auth");
           }}
         >
           <div className="auth-field">
@@ -163,7 +163,7 @@ export default function CitizenForgotPasswordPage() {
           </button>
         </form>
 
-        <Link href="/citizen/login" className="auth-back-link">
+        <Link href="/citizen/auth" className="auth-back-link">
           ← Back to Sign In
         </Link>
       </>

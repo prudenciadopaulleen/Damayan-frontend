@@ -22,6 +22,12 @@ export const siteManagerStyles = StyleSheet.create({
     color: theme.text,
     marginBottom: 12,
   },
+  rowCopy: {
+    color: theme.textMuted,
+    lineHeight: 20,
+    fontSize: 14,
+    ...fonts.regular,
+  },
   checkRow: {
     flexDirection: "row",
     justifyContent: "space-between",

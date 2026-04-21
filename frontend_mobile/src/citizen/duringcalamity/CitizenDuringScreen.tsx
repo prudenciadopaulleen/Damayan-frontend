@@ -3,6 +3,7 @@ import {
   Animated,
   Alert,
   Image,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -136,7 +137,12 @@ export function CitizenDuringScreen({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <View style={styles.shell}>
+    <View
+      style={[
+        styles.shell,
+        Platform.OS === "web" ? ({ height: "100vh" } as any) : null,
+      ]}
+    >
       {/* Top Bar */}
       <View style={styles.topBar}>
         <Pressable style={styles.backButton} onPress={onBack}>
@@ -154,7 +160,16 @@ export function CitizenDuringScreen({ onBack }: { onBack: () => void }) {
       {/* Progress */}
       <ProgressBar step={stepIndex} />
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={[
+          styles.scrollView,
+          Platform.OS === "web"
+            ? ({ maxHeight: "100%", overflowY: "scroll" } as any)
+            : null,
+        ]}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator
+      >
 
         {/* ── STEP 0: Rescue Decision ───────────────────────────────────────── */}
         {step === "rescue_decision" && (

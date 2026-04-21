@@ -5,11 +5,16 @@ export const styles = StyleSheet.create({
   // ─── Shell ───────────────────────────────────────────────────────────────
   shell: {
     flex: 1,
+    minHeight: 0,
     backgroundColor: "#f5f7f5",
   },
+  scrollView: {
+    flex: 1,
+    minHeight: 0,
+  },
   scrollContent: {
-    paddingBottom: 48,
     flexGrow: 1,
+    paddingBottom: 140,
   },
 
   // ─── Top Bar ─────────────────────────────────────────────────────────────

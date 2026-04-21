@@ -13,7 +13,6 @@ const roles: {
   color: string;
   bg: string;
   route: string;
-  icon: string;
 }[] = [
   {
     id: "citizen",
@@ -23,7 +22,6 @@ const roles: {
     color: "#2E7D32",
     bg: "rgba(46,125,50,0.08)",
     route: "/citizen/auth",
-    icon: "👥",
   },
   {
     id: "site_manager",
@@ -32,8 +30,7 @@ const roles: {
     desc: "Manage shelter capacity, supplies, and evacuee intake at your site.",
     color: "#FFB300",
     bg: "rgba(255,179,0,0.08)",
-    route: "/beforecalamity",
-    icon: "🏕",
+    route: "/site-manager/login",
   },
   {
     id: "dispatcher",
@@ -43,7 +40,6 @@ const roles: {
     color: "#81C784",
     bg: "rgba(129,199,132,0.1)",
     route: "/dispatcher",
-    icon: "🚨",
   },
   {
     id: "admin",
@@ -53,7 +49,6 @@ const roles: {
     color: "#4E342E",
     bg: "rgba(78,52,46,0.08)",
     route: "/admin",
-    icon: "🏛",
   },
 ];
 
@@ -135,7 +130,6 @@ export default function LoginPage() {
                 <div className="portal-role-dot" />
                 <div className="portal-role-copy">
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-                    <span style={{ fontSize: "1.2rem" }}>{role.icon}</span>
                     <p className="portal-role-sub" style={{ marginBottom: 0 }}>{role.sub}</p>
                   </div>
                   <h3 className="portal-role-label">{role.label}</h3>

@@ -18,6 +18,11 @@
   border-right: 1px solid rgba(112, 122, 108, 0.12);
 }
 
+.citizen-web-sidebar-footer {
+  margin-top: auto;
+  padding: 0 0.5rem 0.5rem;
+}
+
 .citizen-web-sidebar-brand h1,
 .citizen-web-logo,
 .citizen-web-hero h2,
@@ -164,6 +169,20 @@
   padding: 0.7rem 0.9rem;
   border-radius: 999px;
   background: #f0f1eb;
+}
+
+.citizen-web-profile-avatar {
+  width: 2.45rem;
+  height: 2.45rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #88d982, #2e7d32);
+  color: #fff;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  box-shadow: 0 10px 20px rgba(46, 125, 50, 0.18);
 }
 
 .citizen-web-main {
@@ -684,6 +703,26 @@
   box-shadow: 0 18px 30px rgba(126, 87, 0, 0.28);
 }
 
+.citizen-web-signout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0.5rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  color: #444742;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 800;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.citizen-web-signout:hover {
+  background: #e4e4db;
+  color: #0d631b;
+  transform: translateX(2px);
+}
+
 @media (max-width: 1080px) {
   .citizen-web-topnav {
     display: none;
@@ -960,11 +999,27 @@
   border-radius: 2rem;
   background: #fff;
   border: 1px solid rgba(13, 99, 27, 0.06);
+  box-shadow: 0 20px 44px rgba(26, 28, 25, 0.04);
+  display: grid;
+  gap: 1rem;
 }
 
 .sidebar-box.is-accent {
-  background: #f7f9f6;
-  border-color: rgba(13, 99, 27, 0.1);
+  background: linear-gradient(180deg, #f7f9f6 0%, #f1f6ef 100%);
+  border-color: rgba(13, 99, 27, 0.12);
+}
+
+.sidebar-box-kicker {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(13, 99, 27, 0.08);
+  color: #0d631b;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .sidebar-box h4 {
@@ -981,6 +1036,73 @@
   font-size: 0.88rem;
   color: #586054;
   line-height: 1.6;
+}
+
+.sidebar-box-stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(13, 99, 27, 0.08);
+}
+
+.sidebar-box-stat strong {
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #1a1c19;
+}
+
+.sidebar-box-stat span {
+  color: #0d631b;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.sidebar-box-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.sidebar-box-list li {
+  position: relative;
+  padding-left: 1.2rem;
+  color: #586054;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.sidebar-box-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #0d631b;
+  box-shadow: 0 0 0 0.3rem rgba(13, 99, 27, 0.08);
+}
+
+.sidebar-box-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.sidebar-box-tags span {
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  background: #f3f5f1;
+  color: #445044;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .member-card-v2 {

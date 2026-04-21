@@ -45,12 +45,6 @@ export function SiteManagerSignupScreen({
     }
   }
 
-  async function handleFileFromDrop(files: FileList) {
-    if (files && files.length > 0) {
-      validateAndSetFile(files[0]);
-    }
-  }
-
   // Improved for Web: Attach native event listeners to prevent browser defaults
   React.useEffect(() => {
     const el = uploadBoxRef.current as any;
@@ -93,7 +87,7 @@ export function SiteManagerSignupScreen({
     };
   }, []);
 
-  async function handleFileFromDrop(files: FileList) {
+  function handleFileFromDrop(files: FileList) {
     if (files && files.length > 0) {
       validateAndSetFile(files[0]);
     }

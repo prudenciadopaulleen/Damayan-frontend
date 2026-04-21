@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type FlowStep =
   | "rescue_decision"
@@ -37,8 +37,8 @@ const shelterOptions = [
 const sidebarLinks = [
   { label: "Home", icon: "H", key: "home", href: "/citizen/beforecalamity" },
   { label: "Checklists", icon: "C", key: "checklists", href: "/citizen/beforecalamity#checklists" },
-  { label: "Reporting", icon: "R", key: "report", href: "#" },
-  { label: "Support", icon: "S", key: "support", href: "#broadcast" },
+  { label: "Reporting", icon: "R", key: "report", href: "#reporting" },
+  { label: "Support", icon: "S", key: "support", href: "#support" },
 ];
 
 function getStepMeta(step: FlowStep) {
@@ -72,6 +72,7 @@ function getStepMeta(step: FlowStep) {
 
 export default function CitizenDuringCalamityPage() {
   const [step, setStep] = useState<FlowStep>("rescue_decision");
+  const [activeSidebarItem, setActiveSidebarItem] = useState("report");
   
   // State data collected during the flow
   const [rescueNeeded, setRescueNeeded] = useState<boolean | null>(null);
@@ -86,6 +87,23 @@ export default function CitizenDuringCalamityPage() {
   const currentStepIndex = Math.max(STEP_ORDER.indexOf(step), 0);
   const progress = `${Math.min(((currentStepIndex + 1) / STEP_ORDER.length) * 100, 100)}%`;
   const stepMeta = getStepMeta(step);
+
+  useEffect(() => {
+    function syncActiveSidebarItem() {
+      const hash = window.location.hash;
+      if (hash === "#support") {
+        setActiveSidebarItem("support");
+        return;
+      }
+      setActiveSidebarItem("report");
+    }
+
+    syncActiveSidebarItem();
+    window.addEventListener("hashchange", syncActiveSidebarItem);
+    return () => {
+      window.removeEventListener("hashchange", syncActiveSidebarItem);
+    };
+  }, []);
 
   async function handleCopySms() {
     const code = "DAM-7821";
@@ -464,12 +482,20 @@ export default function CitizenDuringCalamityPage() {
         </div>
         <nav className="citizen-response-sidebar-nav" aria-label="Citizen sections">
           {sidebarLinks.map((item) => (
-            <Link key={item.key} href={item.href} className={item.key === "report" ? "is-active" : ""}>
+            <Link
+              key={item.key}
+              href={item.href}
+              className={activeSidebarItem === item.key ? "is-active" : ""}
+              onClick={() => setActiveSidebarItem(item.key)}
+            >
               <span className="citizen-response-nav-icon">{item.icon}</span><span>{item.label}</span>
             </Link>
           ))}
         </nav>
         <div className="citizen-response-sidebar-footer">
+          <Link className="citizen-response-backlink" href="/citizen/beforecalamity">
+            Back To Prepare
+          </Link>
           <Link className="citizen-response-signout" href="/citizen/auth">Sign Out</Link>
         </div>
       </aside>
@@ -488,7 +514,7 @@ export default function CitizenDuringCalamityPage() {
           </div>
         </header>
 
-        <section className="wizard-content-area">
+        <section className="wizard-content-area" id="reporting">
           <div className="wizard-glass-panel">
             <div className="wizard-panel-header">
               <span className={`wizard-step-tag is-${stepMeta.accent}`}>{stepMeta.label}</span>
@@ -500,10 +526,7 @@ export default function CitizenDuringCalamityPage() {
             {renderStepContent()}
           </div>
           
-          <section className="citizen-response-footer-actions">
-            <Link href="/citizen/beforecalamity">Back To Prepare</Link>
-            <Link href="/citizen/auth">Sign Out</Link>
-          </section>
+          <section className="citizen-response-footer-actions" id="support" />
         </section>
       </main>
     </div>
